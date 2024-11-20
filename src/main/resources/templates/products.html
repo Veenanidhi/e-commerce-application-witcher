@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>product management</title>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" data-th-href="@{'/css/style.css'}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                clifford: '#da373d',
+              }
+            }
+          }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+          .content-auto {
+            content-visibility: auto;
+          }
+        }
+    </style>
+
+</head>
+
+
+<body class="bg-gray-100">
+<div class="flex h-screen">
+
+    <!-- Sidebar -->
+
+    <nav class="bg-gray-800 text-white w-64 h-screen p-4 flex flex-col fixed ">
+        <!-- Main navigation items -->
+        <div class="flex-grow">
+            <ul class="space-y-2">
+                <li class="flex items-center space-x-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    <a th:href="@{/admin/dashboard}">Dashboard</a>
+                    <span class=" rounded-full px-2 py-1 text-xs ml-auto"></span>
+                </li>
+                <li class="flex items-center space-x-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                    <a th:href="@{/admin/products}">Products</a>
+                </li>
+                <li class="flex items-center space-x-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                    </svg>
+                    <a th:href="@{/admin/categories}">Category</a>
+                    <span class="rounded-full px-2 py-1 text-xs ml-auto"></span>
+                </li>
+                <li class="flex items-center space-x-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <a th:href="@{/admin/orders}">Orders</a>
+                    <span class=" rounded-full px-2 py-1 text-xs ml-auto"></span>
+                </li>
+                <li class="flex items-center space-x-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <a th:href="@{/admin/coupons}">Coupons</a>
+                    <span class=" rounded-full px-2 py-1 text-xs ml-auto"></span>
+                </li>
+                <li class="flex items-center space-x-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Banner</span>
+                </li>
+                <li class="flex items-center space-x-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Transaction</span>
+                </li>
+            </ul>
+        </div>
+
+
+        <!-- Your teams section -->
+        <div class="mt-8">
+            <h3 class="text-sm font-semibold mb-2">Admin Management</h3>
+            <ul class="space-y-2">
+                <li class="flex items-center space-x-3">
+                    <span class="bg-indigo-500 rounded-full w-6 h-6 flex items-center justify-center">H</span>
+                    <span>Manage Admins</span>
+                </li>
+                <li class="flex items-center space-x-3">
+                    <span class="bg-indigo-500 rounded-full w-6 h-6 flex items-center justify-center">T</span>
+                    <span>Customers</span>
+                </li>
+                <li class="flex items-center space-x-3">
+                    <span class="bg-indigo-500 rounded-full w-6 h-6 flex items-center justify-center">W</span>
+                    <span>Workcation</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Settings, Help, and Logout -->
+        <div class="mt-8">
+            <ul class="space-y-2">
+                <li class="flex items-center space-x-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span>Settings</span>
+                </li>
+                <li class="flex items-center space-x-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Help</span>
+                </li>
+                <li class="flex items-center space-x-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <!-- Add a logout button -->
+                    <form  action="#" th:action="@{/logout}"
+                           method="POST">
+
+                        <input type="submit" value="Logout" class="btn btn-outline-success mt-2" />
+
+                    </form>
+                </li>
+            </ul>
+        </div>
+
+        <!-- User profile -->
+        <div class="mt-auto pt-4 border-t border-indigo-500 flex items-center">
+            <img src="/img/sarah.png" alt="User Avatar" class="w-10 h-10 rounded-full mr-3">
+            <span>sarah johnson</span>
+        </div>
+    </nav>
+
+
+    <div class="container ml-64 p-4">
+
+
+        <h1 class="text-2xl font-bold">Product</h1>
+
+        <div class="flex justify-center items-center mb-6">
+            <form method="GET" action="#" class="flex items-center space-x-4">
+                <input type="text" name="searchQuery" placeholder="Search products..."
+                       class="w-96 pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       th:value="${searchQuery}">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Search</button>
+            </form>
+        </div>
+
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <a th:href="@{/admin/products/add}" class="bg-blue-500 text-white px-4 py-2 rounded inline-block">+ Add Product</a>
+            </div>
+        </div>
+
+
+
+        <div class="bg-white shadow rounded-lg">
+            <!-- Navigation Links -->
+            <div class="p-4 border-b">
+                <div class="flex space-x-8">
+                    <a href="#" class="text-blue-600 font-medium hover:text-blue-800">All Products</a>
+                    <a href="#" class="text-gray-600 font-medium hover:text-blue-800">Published</a>
+                    <a href="#" class="text-gray-600 font-medium hover:text-blue-800">Low Stock</a>
+                    <a href="#" class="text-gray-600 font-medium hover:text-blue-800">Draft</a>
+                    <a href="#" class="text-gray-600 font-medium hover:text-blue-800">Out of Stock</a>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                    <tr class="bg-gray-50 text-center text-gray-700">
+                        <th class="p-4">#</th>
+                        <th class="p-4">Product</th>
+                        <th class="p-4">Image</th>
+                        <th class="p-4">Description</th>
+                        <th class="p-4">Category</th>
+                        <th class="p-4">Stock</th>
+                        <th class="p-4">Price</th>
+                        <th class="p-4">Color</th>
+                        <th class="p-4">Size</th>
+                        <th class="p-4">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                    <!-- Example row, repeat for each product -->
+                    <tr th:each="product, iStat : ${products}">
+                        <th scope="row" th:text="${iStat.index + 1}" class="p-4 text-gray-900">1</th>
+                        <td th:text="${product.name}" class="p-4">Product Name</td>
+                        <td class="p-4">
+                            <div class="flex justify-center">
+                                <img th:src="@{${'/productImage/' + product.imageName}}" class="h-12 w-12 object-cover rounded-full">
+                            </div>
+                        </td>
+                        <td th:text="${product.description}" class="p-4">Description</td>
+                        <td th:text="${product.category.name}" class="p-4">Category</td>
+                        <td th:text="${product.stock}" class="p-4">Stock</td>
+                        <td th:text="${product.price}" class="p-4">$Price</td>
+                        <td th:text="${product.color}" class="p-4">Color</td>
+                        <td th:text="${product.size}" class="p-4">Size</td>
+
+
+
+                        <td class="p-4 flex justify-center space-x-2">
+                            <a href="" th:href="@{/admin/products/delete/{id}(id=${product.id})}"
+                               onclick="return confirmDeleteProduct()"
+                               class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300">Delete</a>
+                            <a href="" th:href="@{/admin/products/update/{id}(id=${product.id})}"
+                               class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Update</a>
+<!--                            <a href="" th:href="@{/admin/offers/addProductOffer}"-->
+<!--                               class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded">Offer</a>-->
+                        </td>
+                    </tr>
+                    <!-- Repeat rows for other products -->
+                    </tbody>
+                </table>
+
+
+
+                <div class="pagination flex justify-center mt-6" th:if="${totalPages > 1}">
+                    <ul class="flex items-center space-x-2">
+                        <!-- Previous Button -->
+                        <li th:classappend="${currentPage == 0} ? 'disabled cursor-not-allowed text-gray-400' : ''">
+                            <a class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                               th:href="@{/admin/products(page=${currentPage - 1}, size=${size})}"
+                               th:if="${currentPage > 0}">Previous</a>
+                            <span class="px-4 py-2 text-gray-400" th:unless="${currentPage > 0}">Previous</span>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        <li th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}"
+                            th:classappend="${pageNumber == currentPage} ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'"
+                            class="rounded px-3 py-1">
+                            <a class="block"
+                               th:href="@{/admin/products(page=${pageNumber}, size=${size})}"
+                               th:text="${pageNumber + 1}"></a>
+                        </li>
+
+                        <!-- Next Button -->
+                        <li th:classappend="${currentPage == totalPages - 1} ? 'disabled cursor-not-allowed text-gray-400' : ''">
+                            <a class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                               th:href="@{/admin/products(page=${currentPage + 1}, size=${size})}"
+                               th:if="${currentPage < totalPages - 1}">Next</a>
+                            <span class="px-4 py-2 text-gray-400" th:unless="${currentPage < totalPages - 1}">Next</span>
+                        </li>
+                    </ul>
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+    </div>
+
+
+</div>
+
+<!-- JavaScript for Confirmation -->
+<script>
+    function confirmDeleteProduct() {
+        return confirm("Are you sure you want to delete this product?");
+    }
+</script>
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--    <main class="flex-1 p-8">-->
+<!--        <div class="flex justify-between items-center mb-6">-->
+<!--            <h1 class="text-2xl font-bold">Product</h1>-->
+<!--            <div>-->
+<!--                <a th:href="@{/admin/products/add}" class="bg-blue-500 text-white px-4 py-2 rounded inline-block">+ Add Product</a>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="bg-white shadow rounded-lg">-->
+<!--            <div class="p-4 border-b">-->
+<!--                <div class="flex space-x-20">-->
+<!--                    <a href="#" class="text-blue-600">All Products</a>-->
+<!--                    <a href="#" class="text-gray-600">Published</a>-->
+<!--                    <a href="#" class="text-gray-600">Low Stock</a>-->
+<!--                    <a href="#" class="text-gray-600">Draft</a>-->
+<!--                    <a href="#" class="text-gray-600">Out of Stock</a>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <table class="w-full">-->
+<!--                <thead>-->
+<!--                <tr class="bg-gray-50 text-center">-->
+<!--                    <th class="p-4">SI</th>-->
+<!--                    <th class="p-4">Product</th>-->
+<!--                    <th class="p-4">Image</th>-->
+<!--                    <th class="p-4">Description</th>-->
+<!--                    <th class="p-4">Category</th>-->
+<!--                    <th class="p-4">Stock</th>-->
+<!--                    <th class="p-4">Price</th>-->
+<!--                    <th class="p-4">Status</th>-->
+<!--                    <th class="p-4">Action</th>-->
+
+
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody>-->
+<!--                &lt;!&ndash; Example row, repeat for each product &ndash;&gt;-->
+<!--                <tr  th:each="product, iStat : ${products}">-->
+<!--                    <th scope="row" th:text="${iStat.index + 1}">1</th>-->
+<!--                    <td th:text="${product.name}"> </td>-->
+<!--                    <td class="flex items-center ">-->
+<!--                        <img th:src="@{${'/productImage/' + product.imageName}}">-->
+<!--                    </td>-->
+<!--                    <td th:text="${product.description}"> </td>-->
+<!--                  <td th:text="${product.category.name}"></td>-->
+<!--                     <td th:text="${product.stock}"> </td>-->
+<!--                    <td th:text="${product.price}"> </td>-->
+<!--                    <td th:text="${product.status}" class="p-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm"> </span></td>-->
+<!--                     <td><a href="" th:href="@{/admin/products/delete/{id}(id=${product.id})}" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Delete</a></td>-->
+<!--                    <td><a href="" th:href="@{/admin/products/update/{id}(id=${product.id})}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Update</a></td>-->
+
+<!--                </tr>-->
+<!--                &lt;!&ndash; Repeat rows for other products-->
+<!--                 <td class="p-4">-->
+<!--                        <button class="text-gray-600 hover:text-blue-600">Edit</button>-->
+<!--                    </td>-->
+<!--                    &ndash;&gt;-->
+
+<!--                </tbody>-->
+<!--            </table>-->
+
+<!--            <div class="p-4 flex justify-between items-center">-->
+<!--                <span>Showing 1-10 from 100</span>-->
+<!--                <div class="flex space-x-2">-->
+<!--                    <button class="px-3 py-1 border rounded hover:bg-blue-100">1</button>-->
+<!--                    <button class="px-3 py-1 border rounded hover:bg-blue-100">2</button>-->
+<!--                    <button class="px-3 py-1 border rounded hover:bg-blue-100">3</button>-->
+<!--                    <button class="px-3 py-1 border rounded hover:bg-blue-100">4</button>-->
+<!--                    <button class="px-3 py-1 border rounded hover:bg-blue-100">5</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </main>-->

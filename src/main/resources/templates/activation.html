@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+ <html lang="en" xmlns:th="http://www.thymeleaf.org">
+ <head>
+     <meta charset="UTF-8">
+         <title>Account Activation</title>
+     <style>
+         .container{
+         padding:20px;
+     </style>
+ </head>
+ <body>
+
+ <div class="container">
+
+     <h1>Account Activation</h1>
+
+     <!-- Display success message -->
+     <div th:if="${message}" th:text="${message}" style="color: green;"></div>
+
+     <!-- Display error message -->
+     <div th:if="${error}" th:text="${error}" style="color: red;"></div>
+
+     <div class="row justify-content-center">
+         <div class="col col-md-8">
+             <div class="alert alert-light">
+                 <br>
+                 <br>
+                 <a th:href="@{/login}" class="btn btn-info">Login</a>
+             </div>
+         </div>
+     </div>
+ </div>
+
+ </body>
+ </html>
+

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+     <style>
+         .container{
+         padding:20px;
+     </style>
+</head>
+<body>
+
+<div class="container">
+    <h3 th:text="${title}">Verification</h3>
+
+    <p>Thankyou for signing in:)  please tap on the link to verify your email </p>
+
+    <a th:href="${link}" th:text="${link}">Link</a>
+</div>
+
+</body>
+</html>

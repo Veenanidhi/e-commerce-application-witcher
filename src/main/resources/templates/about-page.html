@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>About Us</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" data-th-href="@{'/css/style.css'}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                clifford: '#da373d',
+              }
+            }
+          }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+          .content-auto {
+            content-visibility: auto;
+          }
+        }
+    </style>
+
+    <style>
+        @media (min-width: 768px) {
+            .sidebar {
+                position: sticky;
+                top: 1.5rem;
+                height: calc(100vh - 3rem);
+                overflow-y: auto;
+            }
+        }
+    </style>
+
+    <style>
+        .dropdown-menu {
+          display: none;
+        }
+        .dropdown-menu.show {
+          display: block;
+        }
+    </style>
+
+
+
+
+</head>
+
+<body>
+<!--navbar-->
+<nav class="bg-gray-800">
+    <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div class="relative flex h-16 items-center justify-between">
+            <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                <!-- Mobile menu button-->
+                <button type="button" class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                    <span class="absolute -inset-0.5"></span>
+                    <span class="sr-only">Open main menu</span>
+                    <!--
+                      Icon when menu is closed.
+
+                      Menu open: "hidden", Menu closed: "block"
+                    -->
+                    <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                    <!--
+                      Icon when menu is open.
+
+                      Menu open: "block", Menu closed: "hidden"
+                    -->
+                    <svg class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                <div class="flex flex-shrink-0 items-center">
+                    <img th:src="@{/img/logo.png}" alt="logo" class="w-8 h-8"  >
+
+
+                    <h1 class="ml-4 font-extrabold text-white">WITCHER</h1>
+
+
+                </div>
+                <div class="hidden sm:ml-6 sm:block">
+                    <div class="flex space-x-4 ">
+                        <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+                        <!-- <a href="#" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Dashboard</a>-->
+                        <a th:href="@{/productPage}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Home</a>
+                        <a href="#" th:href="@{/contactPage}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Contact</a>
+                        <a href="#" th:href="@{/aboutPage}"  class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">About</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Icons on the right -->
+
+
+            <div class="flex items-center space-x-4 ">
+                <a th:href="@{/user/wishlist/}" class="text-white hover:text-blue-500">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </a>
+
+                <!--Cart-->
+                <a th:href="@{/user/cart/}" class="relative text-white hover:text-blue-500">
+                    <!-- Cart Icon -->
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <!-- Cart Count Badge -->
+                    <span th:if="${cartCount > 0}"
+                          th:text="${cartCount}"
+                          class="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full">
+                    </span>
+                </a>
+
+                <div class="relative inline-block text-left">
+                    <!-- User Icon -->
+                    <button id="user-menu-button" class="text-white hover:text-blue-500 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
+                        <div class="p-4">
+                            <!-- Profile Information -->
+                            <div class="flex items-center mb-2">
+                                <svg class="w-12 h-12 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-gray-700 font-medium" th:text="${#authentication.name}">User Name</p>
+                                    <p class="text-gray-500 text-sm"3>user@example.com</p>
+                                </div>
+                            </div>
+
+                            <!-- Dropdown Items -->
+
+                            <a th:href="@{/user/profile}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
+                            <form th:action="@{/logout}" method="POST" class="px-4 py-2">
+                                <input type="submit" value="Logout" class="w-full text-center py-2 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!--
+
+
+
+                            !-- Check if the user is authenticated -->
+                <!--            <span th:if="${#authorization.expression('isAuthenticated()')}">-->
+
+                <!--                                <span class="text-white px-5">Welcome, <strong th:text="${#authentication.name}"></strong>!</span>-->
+                <!--&lt;!&ndash;&lt;!&ndash;                                <a class="button is-primary text-white px-8" th:href="@{/login}">&ndash;&gt;&ndash;&gt;-->
+                <!--&lt;!&ndash;                                        <strong>Login</strong></a>&ndash;&gt;-->
+
+                <!--                            </span>-->
+
+                <!--              <span th:if="${#authorization.expression('!isAuthenticated()')}">-->
+
+                <!--            <span th:if="${#authorization.expression('isAuthenticated()')}">-->
+                <!--    <span class="text-white px-5">Welcome,-->
+                <!--           <strong th:text="${#authentication.name}"></strong>-->
+                <!--        <strong th:text="${#authentication.principal.attributes['name']}"></strong>!-->
+                <!--    </span>-->
+                <!--</span>-->
+                <!--            <span th:if="${#authorization.expression('!isAuthenticated()')}">-->
+                <!--          <a class="button is-primary text-white px-4" th:href="@{/login}">-->
+                <!--          <strong>Login</strong>-->
+                <!--     </a>-->
+                <!--&lt;!&ndash;    <a class="button is-light" th:href="@{/signup}">Sign up</a>&ndash;&gt;-->
+                <!--   </span>-->
+
+                <span th:if="${#authorization.expression('isAuthenticated()')}">
+    <span class="text-white px-5">Welcome,
+        <strong th:text="${#authentication.principal instanceof T(org.springframework.security.oauth2.core.user.OAuth2User) ?
+                          #authentication.principal.attributes['name'] :
+                          #authentication.name}">
+        </strong>!
+    </span>
+</span>
+                <span th:if="${#authorization.expression('!isAuthenticated()')}">
+    <a class="button is-primary text-white px-4" th:href="@{/login}">
+        <strong>Login</strong>
+    </a>
+</span>
+
+
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+
+
+<!-- About Us Section -->
+<section class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center">
+        <!-- Image Section -->
+        <div class="md:w-1/2 mb-8 md:mb-0">
+            <img th:src="@{/img/placed.webp}" alt="Joker & Witch Watches" class="rounded-lg shadow-lg w-full object-cover">
+        </div>
+        <!-- Text Section -->
+        <div class="md:w-1/2 md:pl-8">
+            <h2 class="text-4xl font-bold font-serif text-gray-700 mb-4">About Us</h2>
+            <p class="text-lg font-serif font-semibold mb-4">JOKER AND WITCH is a New-Age Watch & Jewellery brand for millennials & Gen Z, offering minimal, unique, and trend-setting global styles at affordable prices.</p>
+            <p class="mb-4 font-serif">We offer understated, yet distinctive watch & jewellery designs with an international appeal and superior aesthetics that integrate seamlessly into any contemporary wardrobe.</p>
+            <p>We strive to provide irresistible value to our customers by ensuring that every product is in vogue, priced aptly, and delivered to your doorstep with care and love.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Our Products Section -->
+
+<section class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold font-serif text-center text-gray-700 mb-8">Our Products</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <img th:src="@{/img/abt.webp}" alt="Product Image 1" class="w-full h-60 object-cover">
+                <div class="p-6">
+                    <p class="text-lg font-semibold mb-4">Our Watches & Jewellery blend the right amount of quirk with wearable designs that are on-trend and at an affordable price range.</p>
+                    <p>Our designs are inspired by international trends, celebrity looks, and high street styles, focusing equally on comfort and functionality.</p>
+                </div>
+            </div>
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <img th:src="@{/img/abt1.webp}" alt="Product Image 2" class="w-full h-60 object-cover">
+                <div class="p-6">
+                    <p class="text-lg  font-semibold mb-4">We pioneered the concept of curated Watch & Bracelet stacks in India, redefining the art of gifting with unique sets.</p>
+                    <p class="font-serif">Our products are thoughtfully put together by in-house stylists to add fun and twist to your special moments!</p>
+                </div>
+            </div>
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <img th:src="@{/img/abt2.webp}" alt="Product Image 3" class="w-full h-60 object-cover">
+                <div class="p-6">
+                    <p class="text-lg  font-semibold mb-4">Designed with timeless style and versatility in mind, our products celebrate individuality, with each piece telling a unique story.</p>
+                    <p class="font-serif">Every product you choose is a reflection of your style, from watches to personalized quote bracelets.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Design Philosophy Section -->
+
+<section class="py-12 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-center text-gray-700 mb-8">Our Design Philosophy</h2>
+        <div class="flex flex-col md:flex-row items-center md:space-x-8">
+            <div class="md:w-1/2">
+                <p class="text-lg font-semibold mb-4">We believe in the power of 'Less is More'!</p>
+                <p class="mb-4">Our designs are minimal, subtle, and right on trend. Clean lines, classic colors, and simplicity define our design philosophy.</p>
+                <p>We ensure that the key focus remains on the product, with our website offering a seamless shopping experience for our customers.</p>
+            </div>
+            <div class="md:w-1/2 mt-6 md:mt-0">
+                <img th:src="@{/img/abt3.webp}" alt="Design Philosophy Image" class="rounded-lg shadow-lg w-full">
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!--footer-->
+
+<footer class="bg-gray-800 p-8">
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+        <!-- Feedback Section -->
+        <div class="bg-gray-100 p-6 rounded-lg">
+            <h3 class="text-lg font-bold mb-2 text-black">FEEDBACK</h3>
+            <p class="mb-4 text-black">Seeking personalized support? Request a call from our team</p>
+            <form>
+                <input type="email" placeholder="example@email.com" class="w-full p-2 mb-2 border rounded">
+                <input type="text" placeholder="Your name" class="w-full p-2 mb-2 border rounded">
+                <button class="bg-black text-white px-4 py-2 rounded w-full">Send Request</button>
+            </form>
+        </div>
+
+        <!-- Info Section -->
+        <div>
+            <h3 class="text-lg font-bold mb-2 text-gray-300">INFO</h3>
+            <ul class="text-gray-300 space-y-1">
+                <li><a href="#" class="hover:underline">ABOUT US</a></li>
+                <li><a href="#" class="hover:underline">BUSINESS WITH US</a></li>
+                <li><a href="#" class="hover:underline">FAQ</a></li>
+                <li><a href="#" class="hover:underline">WE ARE HIRING!</a></li>
+                <li><a href="#" class="hover:underline">BULLETIN</a></li>
+            </ul>
+        </div>
+
+        <!-- About Us Section -->
+        <div>
+            <h3 class="text-lg font-bold mb-2 text-gray-300">ABOUT US</h3>
+            <ul class="text-gray-300 space-y-1">
+                <li><a href="#" class="hover:underline">CUSTOMER SUPPORT AND POLICIES</a></li>
+                <li><a href="#" class="hover:underline">CONTACT US</a></li>
+                <li><a href="#" class="hover:underline">RETURNS AND REFUNDS</a></li>
+                <li><a href="#" class="hover:underline">TERMS AND CONDITIONS</a></li>
+                <li><a href="#" class="hover:underline">PRIVACY POLICY</a></li>
+            </ul>
+        </div>
+
+        <!-- Social Media Icons -->
+        <div class="flex flex-col justify-between">
+            <div class="flex space-x-4">
+                <a href="#" class="text-gray-200 hover:text-black">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                <a href="#" class="text-gray-200 hover:text-black">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+                <a href="#" class="text-gray-200 hover:text-black">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                </a>
+                <a href="#" class="text-gray-200 hover:text-black">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                </a>
+            </div>
+            <p class="text-sm text-gray-500 mt-4">© 2024 - WITCHER</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.getElementById('user-menu-button').addEventListener('click', function() {
+      const dropdownMenu = document.getElementById('dropdown-menu');
+      dropdownMenu.classList.toggle('show');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const target = event.target;
+      const dropdownMenu = document.getElementById('dropdown-menu');
+      const userMenuButton = document.getElementById('user-menu-button');
+
+      if (!userMenuButton.contains(target) && !dropdownMenu.contains(target)) {
+        dropdownMenu.classList.remove('show');
+      }
+    });
+</script>
+</body>
+</html>

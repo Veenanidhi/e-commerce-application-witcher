@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <style>
+        #image{
+          width: 1550px;
+              height: 700px;
+              background: url([[@{/img/checkout.webp}]]);
+              background-size: cover;
+              background-repeat: no-repeat;
+
+        }
+    </style>
+</head>
+
+
+<body>
+<div class="image" id="image">
+<div class="container mx-auto py-12">
+    <div class="max-w-lg mx-auto bg-red-200 shadow-lg rounded-lg p-6">
+        <h2 class="text-2xl font-bold mb-4">Choose Payment Method</h2>
+
+        <!-- Total Cart Summary -->
+        <div class="mb-6">
+            <div class="flex justify-between text-lg font-semibold mb-2">
+                <span>Cart Total:</span>
+                <span th:text="${paymentAmount}">₹ 0.00</span>
+            </div>
+        </div>
+
+<!--         Payment Options -->
+
+        <div class="mb-4">
+            <label class="text-lg font-semibold block mb-2">Payment Options:</label>
+
+            <!-- Cash on Delivery Option -->
+            <div class="flex items-center mb-4">
+                <input id="cod" type="radio" name="paymentMethod" class="h-5 w-5 text-indigo-600" checked>
+                <label th:href="@{/placeOrder}" method="post" for="cod" class="ml-2 text-gray-700">Cash on Delivery</label>
+            </div>
+
+            <!-- Razorpay Option -->
+            <div class="flex items-center">
+                <input id="razorpay" type="radio" name="paymentMethod" value="Razorpay" class="h-5 w-5 text-indigo-600">
+                <label for="razorpay" class="ml-2 text-gray-700">Pay with Razorpay</label>
+            </div>
+
+
+        </div>
+
+        <!-- Button -->
+        <button id="codBtn" class="w-full bg-pink-800 text-white py-2 px-4 rounded-lg hover:bg-pink-600">
+            Confirm COD Order
+        </button>
+
+
+        <!-- Razorpay button -->
+        <button id="razorpayBtn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-blue-600 mt-4 hidden">
+            Pay with Razorpay
+        </button>
+</div>
+
+
+
+    <script>
+    // Toggle between COD and Razorpay buttons
+    const codRadio = document.getElementById('cod');
+    const razorpayRadio = document.getElementById('razorpay');
+    const codBtn = document.getElementById('codBtn');
+    const razorpayBtn = document.getElementById('razorpayBtn');
+
+
+    codRadio.addEventListener('change', function () {
+        if (this.checked) {
+            codBtn.classList.remove('hidden');
+            razorpayBtn.classList.add('hidden');
+            walletBtn.classList.add('hidden');
+        }
+    });
+
+    razorpayRadio.addEventListener('change', function () {
+        if (this.checked) {
+            razorpayBtn.classList.remove('hidden');
+            codBtn.classList.add('hidden');
+            walletBtn.classList.add('hidden');
+        }
+    });
+
+
+
+   // COD button logic
+      codBtn.addEventListener('click', function () {
+    // Add your alert if you still want to show it
+    //alert("Order placed with Cash on Delivery!");
+
+    // Redirect to the order confirmation page
+    window.location.href = "/order-confirmation"; // Adjust the URL if needed
+});
+
+
+    // Razorpay button logic
+    razorpayBtn.addEventListener('click', function () {
+        var options = {
+            "key": "rzp_test_GCgY3o3OlXx0HN", // Replace with your Razorpay key
+            "amount": [[${paymentAmount * 100}]], // Cart total in paisa (e.g., ₹3000 = 300000 paisa)
+            "currency": "INR",
+            "name": "WITCHER",
+            "description": "Shop With Today's Trend",
+            "image": "[[${'/img/logo.png'}]]",
+            "handler": function (response) {
+                 alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+
+                // Handle payment success logic here
+            },
+            "prefill": {
+                "name": "[[${user.username}]]",
+                "email":"[[${user.email}]]",
+                "contact": "[[${user.phone_no}]]"
+            },
+            "theme": {
+                "color": "#3399cc"
+            }
+        };
+
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    });
+</script>
+</div>
+
+</body>
+</html>
+
+
+
+

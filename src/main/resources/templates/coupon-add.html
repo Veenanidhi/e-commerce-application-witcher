@@ -1,0 +1,41 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Add Coupon</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Add Coupon</h1>
+    <form th:action="@{/admin/coupons/add}" method="post" class="bg-white p-6 shadow-md rounded-lg space-y-4">
+        <div>
+            <label for="couponName" class="block text-gray-700">Coupon Name</label>
+            <input type="text" id="couponName" name="couponName" class="w-full border border-gray-300 p-2 rounded" required>
+        </div>
+        <div>
+            <label for="description" class="block text-gray-700">Description</label>
+            <textarea id="description" name="description" class="w-full border border-gray-300 p-2 rounded" rows="3" required></textarea>
+        </div>
+        <div>
+            <label for="amount" class="block text-gray-700">Amount</label>
+            <input type="number" id="amount" name="amount" class="w-full border border-gray-300 p-2 rounded" required>
+        </div>
+        <div>
+            <label for="minimumPurchase" class="block text-gray-700">Minimum Purchase Amount</label>
+            <input type="number" id="minimumPurchase" name="minimumPurchaseAmount" class="w-full border border-gray-300 p-2 rounded" required>
+        </div>
+        <div>
+            <label for="usageCount" class="block text-gray-700">Usage Count</label>
+            <input type="number" id="usageCount" name="usageCount" class="w-full border border-gray-300 p-2 rounded">
+        </div>
+        <div class="flex justify-end space-x-4">
+            <a th:href="@{/admin/coupons}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">Cancel</a>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Save</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+package com.witcher.e_commerce.application.witcher.dao;
+
+import com.witcher.e_commerce.application.witcher.entity.User;
+import com.witcher.e_commerce.application.witcher.entity.Wishlist;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
+
+    Optional<Wishlist> findByUser(User user);
+}

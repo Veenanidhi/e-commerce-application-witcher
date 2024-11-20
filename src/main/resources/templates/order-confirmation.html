@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="bg-gray-100">
+<div class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <div class="text-center mb-6">
+        <svg class="mx-auto h-12 w-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <h1 class="mt-4 text-3xl font-bold text-gray-900">Order Placed Successfully!</h1>
+    </div>
+
+    <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-6" role="alert">
+        <p class="font-bold">Order Number: <span th:text="${orderNumber}"></span></p>
+        <p>Please save this number for your records. You'll need it to track your order.</p>
+    </div>
+
+    <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-6" role="alert">
+        <p>Thank you for your purchase. We've received your order and will begin processing it soon.</p>
+        <p class="mt-2">Come back Soon with An amazing Purchase!!</p>
+    </div>
+
+<!--    <div class="space-y-4">-->
+<!--        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Track My Order</button>-->
+<!--        <a th:href="@{/productPage}" class="w-full bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow text-center">-->
+<!--            Continue Shopping-->
+<!--        </a>-->
+
+<!--    </div>-->
+
+    <div class="flex space-x-4">
+        <!-- Continue Shopping Button -->
+        <a th:href="@{/productPage}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 border border-blue-700 rounded shadow text-center">
+<!--            "flex-1 bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow text-center"-->
+            Continue Shopping
+        </a>
+        <!-- Track My Order Button -->
+<!--        <a th:href="@{/user/profile/order-history}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 border border-blue-700 rounded shadow text-center">-->
+<!--            Track My Order-->
+<!--        </a>-->
+    </div>
+
+
+    <div class="mt-8 text-sm text-gray-500">
+        <p>If you have any questions or concerns, please don't hesitate to contact our customer support.</p>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
+</body>
+</html>

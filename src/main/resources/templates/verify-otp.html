@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Verify OTP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100">
+
+<div class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+    <h2 class="mb-6 text-2xl font-semibold text-center text-gray-800">OTP Verification</h2>
+
+    <!-- Success and error messages -->
+    <p th:text="${message}" class="mb-4 text-sm text-green-600"></p>
+    <p th:text="${error}" class="mb-4 text-sm text-red-600"></p>
+
+
+
+
+    <!-- OTP Timer -->
+    <p id="timer" class="mb-4 text-sm text-blue-600">Time remaining: 5:00</p>
+
+    <!-- OTP Verification Form -->
+    <form id="otpForm" th:action="@{/api/otp/verify}" method="post" class="space-y-4">
+        <input type="hidden" name="email" th:value="${email}"/>
+
+        <div>
+            <label for="otp" class="block mb-2 text-sm font-medium text-gray-700">Enter OTP:</label>
+            <input type="text" id="otp" name="otp" required
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+        </div>
+
+        <button type="submit"
+                class="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Verify
+        </button>
+    </form>
+
+    <div class="mt-4 text-center">
+        <p class="text-sm text-gray-600">Didn't receive the OTP?</p>
+        <a th:href="@{/resend-otp(email=${email})}"
+           class="mt-2 text-indigo-600 hover:text-indigo-800 focus:outline-none">
+            Resend OTP
+        </a>
+    </div>
+
+
+
+    <p id="message" class="mt-4 text-center text-sm text-red-500 hidden"></p>
+
+
+</div>
+
+
+    <script>
+    let timeLeft = 300; // Default time set to 5 minutes (300 seconds)
+
+    // Function to start the countdown timer
+    function startTimer() {
+        const timerElement = document.getElementById("timer");
+        const countdown = setInterval(() => {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `Time remaining: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                timerElement.textContent = "OTP expired. Please request a new one.";
+                document.querySelector("button[type='submit']").disabled = true; // Disable verify button
+            }
+
+            timeLeft--;
+        }, 1000);
+    }
+
+         async function resendOTP() {
+            const email = document.getElementById('email').value;
+
+            if (!email) {
+                alert('Please enter your email address before resending the OTP.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/otp/resend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({ email }),
+                });
+
+                const message = await response.text();
+                document.getElementById('message').textContent = message;
+                document.getElementById('message').classList.remove('hidden');
+                document.getElementById('message').classList.add('text-green-500');
+            } catch (error) {
+                console.error('Error resending OTP:', error);
+            }
+        }
+
+
+
+
+
+
+
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<&#45;&#45;<!DOCTYPE html>&ndash;&gt;-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <title>Verify OTP</title>-->
+<!--    <script src="https://cdn.tailwindcss.com"></script>-->
+<!--</head>-->
+<!--<body class="flex items-center justify-center min-h-screen bg-gray-100">-->
+
+<!--<div class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">-->
+<!--    <h2 class="mb-6 text-2xl font-semibold text-center text-gray-800">OTP Verification</h2>-->
+
+<!--    <p th:text="${message}" class="mb-4 text-sm text-green-600"></p>-->
+<!--    <p th:text="${error}" class="mb-4 text-sm text-red-600"></p>-->
+
+<!--    <form action="#" th:action="@{/verify-otp}" method="post" class="space-y-4">-->
+<!--        <input type="hidden" name="email" th:value="${email}"/>-->
+
+<!--        <div>-->
+<!--            <label for="otp" class="block mb-2 text-sm font-medium text-gray-700">Enter OTP:</label>-->
+<!--            <input type="text" id="otp" name="otp" required-->
+<!--                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>-->
+<!--        </div>-->
+
+<!--        <button type="submit"-->
+<!--                class="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">-->
+<!--            Verify-->
+<!--        </button>-->
+<!--    </form>-->
+<!--</div>-->
+
+<!--</body>-->
+<!--</html>-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <title>Verify OTP</title>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<h2>OTP Verification</h2>-->
+
+<!--<p th:text="${message}"></p>-->
+<!--<p th:text="${error}"></p>-->
+
+<!--<form action="#" th:action="@{/verify-otp}" method="post">-->
+<!--    <input type="hidden" name="email" th:value="${email}"/>-->
+
+<!--    <label for="otp">Enter OTP:</label>-->
+<!--    <input type="text" id="otp" name="otp" required/>-->
+
+<!--    <button type="submit">Verify</button>-->
+<!--</form>-->
+
+<!--</body>-->
+<!--</html>-->

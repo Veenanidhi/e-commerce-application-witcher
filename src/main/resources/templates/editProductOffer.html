@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>edit offer</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+<form th:action="@{${productOffer.productOfferId != null} ? '/admin/offers/editProductOffer' : '/admin/offers/addProductOffer'}"
+      th:object="${productOffer}" method="post" class="space-y-4 bg-white p-6 rounded-lg shadow-lg max-w-2xl mx-auto">
+
+    <!-- Hidden field to store Product Offer ID for editing -->
+    <input type="hidden" th:field="*{productOfferId}"/>
+
+    <!-- Offer Name -->
+    <div>
+        <label for="offerName" class="block text-gray-700 font-medium">Offer Name</label>
+        <input type="text" id="offerName" th:field="*{productOfferName}"
+               class="w-full border-gray-300 rounded-lg p-2 mt-1 focus:border-blue-500 focus:ring-blue-500"
+               placeholder="Enter offer name" required>
+    </div>
+
+    <!-- Discount Percentage -->
+    <div>
+        <label for="discount" class="block text-gray-700 font-medium">Discount (%)</label>
+        <input type="number" id="discount" th:field="*{discountPercentage}" min="0" max="100" step="0.01"
+               class="w-full border-gray-300 rounded-lg p-2 mt-1 focus:border-blue-500 focus:ring-blue-500"
+               placeholder="Enter discount percentage" required>
+    </div>
+
+    <!-- Select Product -->
+<!--    <div>-->
+<!--        <label for="product" class="block text-gray-700">Select Product</label>-->
+<!--        <select id="product" th:field="*{productList}" multiple="multiple"-->
+<!--                class="w-full border-gray-300 rounded-lg p-2 mt-1 focus:border-blue-500 focus:ring-blue-500">-->
+<!--            <option th:each="product : ${products}"-->
+<!--                    th:value="${product.id}" th:text="${product.name}">-->
+<!--            </option>-->
+<!--        </select>-->
+<!--    </div>-->
+
+    <!-- Start Date -->
+    <div class="mb-4">
+        <label for="startDate" class="block text-gray-700 font-medium">Start Date</label>
+        <input type="date" id="startDate" th:field="*{startDate}"
+               class="w-full border-gray-300 rounded-lg p-2 mt-1 focus:border-blue-500 focus:ring-blue-500"
+               required>
+        <p class="mt-1 text-xs text-gray-500">Format: yyyy-MM-dd</p>
+    </div>
+
+    <!-- Expiry Date -->
+    <div class="mb-4">
+        <label for="expiryDate" class="block text-gray-700 font-medium">Expiry Date</label>
+        <input type="date" id="expiryDate" th:field="*{expiryDate}"
+               class="w-full border-gray-300 rounded-lg p-2 mt-1 focus:border-blue-500 focus:ring-blue-500"
+               required>
+        <p class="mt-1 text-xs text-gray-500">Format: yyyy-MM-dd</p>
+    </div>
+
+    <!-- Description -->
+    <div>
+        <label for="description" class="block text-gray-700 font-medium">Description</label>
+        <textarea id="description" th:field="*{description}" rows="4"
+                  class="w-full border-gray-300 rounded-lg p-2 mt-1 focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="Enter offer description" required></textarea>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex justify-between items-center mt-6">
+        <a th:href="@{/admin/offers/listProductOffers}"
+           class="text-gray-600 hover:text-gray-800 font-medium">Back to Offers List</a>
+        <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+            <span th:text="${productOffer.productOfferId != null} ? 'Update Offer' : 'Add Offer'">Add Offer</span>
+        </button>
+    </div>
+</form>
+
+
+
+</body>
+</html>
