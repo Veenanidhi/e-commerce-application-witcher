@@ -1,13 +1,19 @@
 package com.witcher.e_commerce.application.witcher.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Table(name = "category")
@@ -30,18 +36,13 @@ public class Category {
 
     private boolean isDeleted=false;
 
-    @ManyToOne
-    @JoinColumn(name = "category_offer_id")
-    private CategoryOffer categoryOffer;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category")
     private List <Product> products;
 
+    @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CategoryOffer categoryOffer;
 
-
-    // Default constructor
-    public Category() {
-    }
 
 
     @PrePersist
@@ -56,11 +57,6 @@ public class Category {
         updatedAt = LocalDateTime.now();
     }
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+
 }

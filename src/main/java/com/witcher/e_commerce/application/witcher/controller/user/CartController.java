@@ -1,5 +1,8 @@
 package com.witcher.e_commerce.application.witcher.controller.user;
 
+import com.razorpay.RazorpayClient;
+import com.witcher.e_commerce.application.witcher.dto.PaymentFailureRequest;
+import com.witcher.e_commerce.application.witcher.dto.PaymentSuccessRequest;
 import com.witcher.e_commerce.application.witcher.entity.*;
 import com.witcher.e_commerce.application.witcher.service.UserService;
 import com.witcher.e_commerce.application.witcher.service.address.AddressService;
@@ -8,13 +11,16 @@ import com.witcher.e_commerce.application.witcher.service.coupon.CouponService;
 import com.witcher.e_commerce.application.witcher.service.order.OrderService;
 import com.witcher.e_commerce.application.witcher.service.product.ProductService;
 import com.witcher.e_commerce.application.witcher.service.transaction.TransactionService;
+import com.witcher.e_commerce.application.witcher.service.wallet.WalletService;
+import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 
 @Controller
 @RequestMapping("/user/cart")
@@ -24,29 +30,31 @@ public class CartController {
     private final CartService cartService;
     private final OrderService orderService;
     private final UserService userService;
+    private final WalletService walletService;
 
     private final TransactionService transactionService;
-
 
 
     private final CouponService couponService;
 
     private final AddressService addressService;
 
-    public CartController(ProductService productService, CartService cartService, OrderService orderService, UserService userService, TransactionService transactionService, CouponService couponService, AddressService addressService) {
+    public CartController(ProductService productService, CartService cartService, OrderService orderService, UserService userService, WalletService walletService, TransactionService transactionService, CouponService couponService, AddressService addressService) {
         this.productService = productService;
         this.cartService = cartService;
         this.orderService = orderService;
         this.userService = userService;
+        this.walletService = walletService;
         this.transactionService = transactionService;
         this.couponService = couponService;
         this.addressService = addressService;
     }
 
+
     @GetMapping("/addToCart/{id}")
     public String addToCart(@PathVariable Long id, Model model) {
         Optional<Product> optionalProduct = productService.getProductById(id);
-        User user = userService.getCurrentUser(); // Assume you have a method to get the logged-in user
+        User user = userService.getCurrentUser();
 
         if (optionalProduct.isPresent()) {
             Product product = optionalProduct.get();
@@ -91,23 +99,43 @@ public class CartController {
         return "redirect:/user/cart/";
     }
 
+
     @GetMapping("/")
     public String getCart(Model model) {
         User user = userService.getCurrentUser();
         Cart cart = cartService.getUserCart(user);
 
+        double total = cart.getCartItem().stream().mapToDouble(item -> {
+            Product product = item.getProduct();
+            double basePrice = product.getPrice();
+            double finalPrice = basePrice;
+
+            // Apply product offer - using only the first offer like in your template
+            if (product.getProductOffers() != null && !product.getProductOffers().isEmpty()) {
+                ProductOffer offer = product.getProductOffers().get(0);
+                // Removed the isEnabled() and isActive() checks to match template
+                double discountedPrice = basePrice - (basePrice * offer.getDiscountPercentage() / 100);
+                finalPrice = discountedPrice;
+            }
+            // Apply category offer - making validation check match template
+            else if (product.getCategoryOffer() != null && product.getCategoryOffer().isActive()
+                    && product.getCategoryOffer().isActive()) {
+                double categoryDiscountedPrice = basePrice - (basePrice * product.getCategoryOffer().getDiscountPercentage() / 100);
+                finalPrice = categoryDiscountedPrice;
+            }
+
+            // Multiply by quantity
+            return finalPrice * item.getQuantity();
+        }).sum();
+
+        // Format the total to two decimal places for consistency
         model.addAttribute("cartCount", cart.getCartItem().size());
-        model.addAttribute("total", cart.getCartItem().stream().mapToDouble(item -> item.getPrice() * item.getQuantity()).sum());
+        model.addAttribute("total", String.format("%.2f", total));
         model.addAttribute("cart", cart.getCartItem());
 
         return "cart";
     }
 
-//    @GetMapping("/increment/{id}")
-//    public String incrementCartItem(@PathVariable Long id) {
-//        cartService.incrementCartItem(id);
-//        return "redirect:/cart"; // Redirects to cart view
-//    }
 
     @GetMapping("/increment/{id}")
     public String incrementCartItem(@PathVariable Long id, Model model) {
@@ -144,14 +172,12 @@ public class CartController {
             CartItem cartItem = optionalCartItem.get();
             if (cartItem.getQuantity() > 1) {
                 cartItem.setQuantity(cartItem.getQuantity() - 1);
-                cartService.saveCartItem(cartItem); // Save the updated cart item
+                cartService.saveCartItem(cartItem);
             }
         }
 
         return "redirect:/user/cart/";
     }
-
-
 
 
     @GetMapping("/removeProduct/{cartItemId}")
@@ -165,83 +191,117 @@ public class CartController {
             try {
                 int stock = Integer.parseInt(product.getStock());
                 product.setStock(String.valueOf(stock + cartItem.getQuantity())); // Increase stock
-                productService.saveProduct(product); // Save updated product
+                productService.saveProduct(product);
 
-                cartService.removeCartItem(cartItem); // Remove item from cart
+                cartService.removeCartItem(cartItem);
             } catch (NumberFormatException e) {
-                // Handle error if stock is not a valid number
+
             }
         }
 
-        return "redirect:/user/cart/";
+        return "redirect:/productPage";
     }
+
 
     @GetMapping("/checkout")
     public String checkout(Model model, @RequestParam(value = "couponId", required = false) Long couponId) {
         User user = userService.getCurrentUser();
         Cart cart = cartService.getUserCart(user);
-        if (cart == null || cart.getCartItem() == null || cart.getCartItem().isEmpty()){
+
+        if (cart == null || cart.getCartItem() == null || cart.getCartItem().isEmpty()) {
             return "redirect:/productPage";
         }
 
-        double totalAmount = cart.getCartItem().stream().mapToDouble(item -> item.getPrice() * item.getQuantity()).sum();
+        double totalAmount = cart.getCartItem().stream().mapToDouble(item -> {
+            Product product = item.getProduct();
+            double basePrice = product.getPrice();
+            double finalPrice = basePrice;
 
-        // Check if a coupon is applied
+            // Apply product offer - same logic as in getCart
+            if (product.getProductOffers() != null && !product.getProductOffers().isEmpty()) {
+                ProductOffer offer = product.getProductOffers().get(0);
+                // Removed isActive check to match template logic
+                double discountedPrice = basePrice - (basePrice * offer.getDiscountPercentage() / 100);
+                finalPrice = discountedPrice;
+            }
+            // Apply category offer - same logic as in getCart
+            else if (product.getCategoryOffer() != null && product.getCategoryOffer().isActive()
+                    && product.getCategoryOffer().isActive()) {
+                double categoryDiscountedPrice = basePrice - (basePrice * product.getCategoryOffer().getDiscountPercentage() / 100);
+                finalPrice = categoryDiscountedPrice;
+            }
+
+            // Multiply by quantity
+            return finalPrice * item.getQuantity();
+        }).sum();
+
+        // Apply coupon if provided
         if (couponId != null) {
             Optional<Coupon> optionalCoupon = couponService.getCouponById(couponId);
 
-            if (optionalCoupon.isPresent() && optionalCoupon.get().isActive()) {
+            if (optionalCoupon.isPresent()) {
                 Coupon coupon = optionalCoupon.get();
 
-                // Check if total is above the coupon's minimum purchase amount
-                if (totalAmount >= coupon.getMinimumPurchaseAmount()) {
-                    totalAmount -= coupon.getAmount(); // Subtract coupon amount
+                if (coupon.isActive() && totalAmount >= coupon.getMinimumPurchaseAmount() && coupon.getUsageCount() > 0) {
+                    totalAmount -= coupon.getAmount();
+                    cart.setTotalAmount(totalAmount);
+                    cartService.saveCart(cart);
+
+                    coupon.setUsageCount(coupon.getUsageCount() - 1);
+                    couponService.saveCoupon(coupon);
+                    model.addAttribute("success", "Coupon applied successfully!");
+                } else {
+                    model.addAttribute("error", "Coupon is invalid or cannot be applied.");
                 }
+            } else {
+                model.addAttribute("error", "Coupon not found.");
             }
         }
 
-
-        // Fetch all addresses for the user
         List<Address> addresses = addressService.getAllAddressesByUser(user);
         List<Coupon> activeCoupons = couponService.getAllCoupons();
-
-
 
         model.addAttribute("coupons", activeCoupons);
         model.addAttribute("user", user);
         model.addAttribute("cartCount", cart.getCartItem().size());
-        model.addAttribute("paymentAmount", totalAmount);
+        model.addAttribute("paymentAmount", String.format("%.2f", totalAmount));
         model.addAttribute("addresses", addresses);
+        model.addAttribute("coupons", couponService.getAllCoupons());
 
         return "checkout";
     }
+
 
     @GetMapping("/applyCoupon")
     public String applyCoupon(@RequestParam(value = "couponId") Long couponId, Model model) {
         User user = userService.getCurrentUser();
         Cart cart = cartService.getUserCart(user);
+        List<Address> addresses = addressService.getAllAddressesByUser(user);
 
-        // Check if the cart is empty
+
         if (cart == null || cart.getCartItem() == null || cart.getCartItem().isEmpty()) {
             model.addAttribute("error", "Your cart is empty.");
-            model.addAttribute("coupons",couponService.getAllCoupons());
-            return "checkout"; // Redirect to checkout or cart page
+            model.addAttribute("coupons", couponService.getAllCoupons());
+            return "checkout";
         }
 
         Optional<Coupon> optionalCoupon = couponService.getCouponById(couponId);
 
-        // Apply the coupon if it's present and active
         if (optionalCoupon.isPresent() && optionalCoupon.get().isActive()) {
             Coupon coupon = optionalCoupon.get();
             double totalAmount = cart.getCartItem().stream()
                     .mapToDouble(item -> item.getPrice() * item.getQuantity())
                     .sum();
 
-            // Check minimum purchase amount
+
             if (totalAmount >= coupon.getMinimumPurchaseAmount()) {
                 double discountedAmount = totalAmount - coupon.getAmount();
+                cart.setAppliedCoupon(coupon);
+                cart.setTotalAmount(discountedAmount);
+                cartService.saveCart(cart);
                 model.addAttribute("success", "Coupon applied successfully!");
-                model.addAttribute("discountedAmount", discountedAmount);
+                model.addAttribute("paymentAmount", discountedAmount);
+                System.out.println("DISSSSSSSSSSSSSSSSSSSSSSCOUNNNNNNNNNNNNNNNNNNNT" + discountedAmount);
             } else {
                 model.addAttribute("error", "Coupon cannot be applied. Minimum purchase amount is required.");
             }
@@ -249,8 +309,11 @@ public class CartController {
             model.addAttribute("error", "Invalid or inactive coupon.");
         }
 
-        // Return to checkout page with model attributes
-        model.addAttribute("coupons", couponService.getAllCoupons());
+        List<Coupon> activeCoupons = couponService.getAllCoupons();
+        model.addAttribute("paymentAmount", cart.getTotalAmount());
+        model.addAttribute("coupons", activeCoupons);
+        model.addAttribute("addresses", addresses);
+        model.addAttribute("cartCount", cart.getCartItem().size());
         return "checkout";
     }
 
@@ -258,49 +321,124 @@ public class CartController {
     public String removeCoupon(Model model) {
         User user = userService.getCurrentUser();
         Cart cart = cartService.getUserCart(user);
+        List<Address> addresses = addressService.getAllAddressesByUser(user);
 
-        // Check if the cart is empty
         if (cart == null || cart.getCartItem() == null || cart.getCartItem().isEmpty()) {
             model.addAttribute("error", "Your cart is empty.");
-            model.addAttribute("coupons", couponService.getAllCoupons()); // Ensure coupons are displayed
-            return "redirect:/checkout"; // Redirect to checkout or cart page
+            model.addAttribute("coupons", couponService.getAllCoupons());
+            return "checkout";
         }
 
-        // Restore original total amount
+        // Reset total amount without coupon
         double totalAmount = cart.getCartItem().stream()
-                .mapToDouble(item -> item.getPrice() * item.getQuantity())
-                .sum();
+                .mapToDouble(item -> {
+                    double price = item.getPrice();
+
+                    // Check if there's an offer
+                    if (item.getProduct().getProductOffers() != null && !item.getProduct().getProductOffers().isEmpty()) {
+                        ProductOffer offer = item.getProduct().getProductOffers().get(0);
+                        if (offer.isEnabled()) {
+                            double discount = offer.getDiscountPercentage();
+                            price = price - (price * discount / 100);
+                        }
+                    }
+
+                    return price * item.getQuantity();
+                }).sum();
+
+        // Remove coupon from cart
+        cart.setAppliedCoupon(null);
+        cart.setTotalAmount(totalAmount);
+        cartService.saveCart(cart);
 
         model.addAttribute("success", "Coupon removed successfully.");
-        model.addAttribute("paymentAmount", totalAmount); // Reset to the original amount
-        model.addAttribute("coupons", couponService.getAllCoupons()); // Ensure coupons are displayed
+        model.addAttribute("paymentAmount", totalAmount);
+        model.addAttribute("addresses", addresses);
+        model.addAttribute("coupons", couponService.getAllCoupons());
+        model.addAttribute("cartCount", cart.getCartItem().size());
 
-        return "checkout"; // Return to checkout page
+        return "checkout";
     }
 
+
     @PostMapping("/payNow")
-    public String payNow (Model model) {
+    public String payNow(@RequestParam(value = "orderId", required = false) Long orderId, Model model) {
         User user = userService.getCurrentUser();
         Cart cart = cartService.getUserCart(user);
 
-
-        double totalAmount = cart.getCartItem().stream().mapToDouble(item -> item.getPrice() * item.getQuantity()).sum();
-
+        double totalAmount = 0.0;
+        double totalDiscount = 0.0;
 
         for (CartItem cartItem : cart.getCartItem()) {
+            Product product = cartItem.getProduct();
+            double basePrice = product.getPrice();
+            double finalPrice = basePrice;
+            double discountAmount = 0.0;
+
+
+            if (orderId != null) {
+
+                Orders pendingOrder = orderService.findById(orderId);
+
+                if (pendingOrder == null || !"Payment Pending".equals(pendingOrder.getOrderStatus())) {
+                    model.addAttribute("errorMessage", "Invalid or non-pending order selected.");
+                    return "error";
+                }
+
+                totalAmount = pendingOrder.getTotalAmount();
+                model.addAttribute("paymentAmount", totalAmount);
+                model.addAttribute("totalDiscount", 0.0);
+                model.addAttribute("paymentMethod", "razorpay");
+                model.addAttribute("user", user);
+                model.addAttribute("orderId", orderId);
+
+                return "payment";
+            }
+
+
+
+            double originalItemTotal = basePrice * cartItem.getQuantity();
+
+
+            if (product.getProductOffers() != null && !product.getProductOffers().isEmpty()) {
+                ProductOffer offer = product.getProductOffers().get(0);
+                double discountedPrice = basePrice - (basePrice * offer.getDiscountPercentage() / 100);
+                finalPrice = discountedPrice;
+            }
+
+            else if (product.getCategoryOffer() != null && product.getCategoryOffer().isActive()
+                    && product.getCategoryOffer().isActive()) {
+                double categoryDiscountedPrice = basePrice - (basePrice * product.getCategoryOffer().getDiscountPercentage() / 100);
+                finalPrice = categoryDiscountedPrice;
+            }
+
+
+            double finalItemTotal = finalPrice * cartItem.getQuantity();
+
+
+            discountAmount = originalItemTotal - finalItemTotal;
+
+
+            totalDiscount += discountAmount;
+            totalAmount += finalItemTotal;
+
+            //to save order
             Orders order = new Orders();
             order.setItemCount(cartItem.getQuantity());
-            order.setProduct(cartItem.getProduct());
-            order.setOrderStatus("Processing");
+            order.setProduct(product);
+            order.setOrderStatus("Payment Pending");
+            order.setPaymentStatus("Pending");
             order.setOrderDate(new Date());
-            order.setTotalAmount(cartItem.getPrice() * cartItem.getQuantity());
+            order.setTotalAmount(finalItemTotal);
             order.setUser(user);
-
-
             orderService.saveOrder(order);
         }
 
+        boolean codAvailable = totalAmount <= 1000;
+
+        model.addAttribute("codAvailable", codAvailable);
         model.addAttribute("paymentAmount", totalAmount);
+        model.addAttribute("totalDiscount", totalDiscount);
         model.addAttribute("paymentMethod", "razorpay");
         model.addAttribute("user", user);
 
@@ -308,17 +446,101 @@ public class CartController {
     }
 
 
+    @PostMapping("/payment/success")
+    public ResponseEntity<String> handlePaymentSuccess(@RequestBody PaymentSuccessRequest request) {
+        try {
 
+            Orders order = orderService.findById(request.getOrderId());
+            if (order == null) {
+                return ResponseEntity.badRequest().body("Invalid order ID");
+            }
 
+            // Update order status
+            order.setPaymentStatus("Success");
+            order.setOrderStatus("Processing");
+            orderService.saveOrder(order);
 
-
-
-
-
-
-
-
+            return ResponseEntity.ok("Payment success processed");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing success");
+        }
     }
+
+
+
+    @PostMapping("/payment/failure")
+    public ResponseEntity<String> handlePaymentFailure(@RequestBody PaymentFailureRequest request) {
+        try {
+
+            Orders order = orderService.findById(request.getOrderId());
+            if (order == null) {
+                return ResponseEntity.badRequest().body("Invalid order ID");
+            }
+
+            order.setPaymentStatus("failure");
+            order.setOrderStatus("Payment Pending");
+            orderService.saveOrder(order);
+
+            return ResponseEntity.ok("Payment failure processed");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing failure");
+        }
+    }
+
+
+    @PostMapping("/create-razorpay-order")
+    @ResponseBody
+    public Map<String, Object> createRazorpayOrder(@RequestBody Map<String, Object> payload) {
+        try {
+            double amount = Double.parseDouble(payload.get("amount").toString());
+            Long orderId = payload.get("orderId") != null ? Long.parseLong(payload.get("orderId").toString()) : null;
+
+            RazorpayClient razorpay = new RazorpayClient("rzp_test_GCgY3o3OlXx0HN", "q4GkXW0SRLZ7MBzK1sRO2Pcc");
+
+            JSONObject orderRequest = new JSONObject();
+            orderRequest.put("amount", (int) (amount * 100)); // amount in paise
+            orderRequest.put("currency", "INR");
+            orderRequest.put("receipt", "order_rcptid_" + System.currentTimeMillis());
+
+            com.razorpay.Order order = razorpay.orders.create(orderRequest);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("orderId", order.get("id"));
+            response.put("amount", amount);
+            response.put("applicationOrderId", orderId);
+            return response;
+        } catch (Exception e) {
+            throw new RuntimeException("Razorpay order creation failed: " + e.getMessage());
+        }
+    }
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

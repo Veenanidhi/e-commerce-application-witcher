@@ -23,4 +23,6 @@ public class AddressDTO {
     private String pinCode;
 
     private String number;
+
+
 }

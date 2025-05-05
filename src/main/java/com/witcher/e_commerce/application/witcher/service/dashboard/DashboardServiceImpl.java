@@ -1,11 +1,16 @@
 package com.witcher.e_commerce.application.witcher.service.dashboard;
 
+import com.witcher.e_commerce.application.witcher.dao.CategoryRepository;
 import com.witcher.e_commerce.application.witcher.dao.OrderRepository;
 import com.witcher.e_commerce.application.witcher.dao.UserRepository;
+import com.witcher.e_commerce.application.witcher.entity.Orders;
+import com.witcher.e_commerce.application.witcher.entity.Product;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
 
 @Service
 public class DashboardServiceImpl implements DashboardService{
@@ -14,9 +19,12 @@ public class DashboardServiceImpl implements DashboardService{
 
     private final OrderRepository orderRepository;
 
-    public DashboardServiceImpl(UserRepository userRepository, OrderRepository orderRepository) {
+    private final CategoryRepository categoryRepository;
+
+    public DashboardServiceImpl(UserRepository userRepository, OrderRepository orderRepository, CategoryRepository categoryRepository) {
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
+        this.categoryRepository = categoryRepository;
     }
 
 
@@ -31,7 +39,7 @@ public class DashboardServiceImpl implements DashboardService{
     }
 
     @Override
-    public Object getTodayRevenue() {
+    public Double getTodayRevenue() {
         return orderRepository.findTodayRevenue() != null ? orderRepository.findTodayRevenue() : 0.0;
     }
 
@@ -57,11 +65,26 @@ public class DashboardServiceImpl implements DashboardService{
 
         // Map the revenue data to the correct month index (0 = Jan, 11 = Dec)
         for (Object[] result : results) {
-            int monthIndex = ((Integer) result[0]) - 1; // Adjust to zero-based index
-            Double revenue = (Double) result[1];
-            monthlyRevenue.set(monthIndex, revenue);
+            if (result[0] != null && result[1] != null) { // Null check!
+                int monthIndex = ((Number) result[0]).intValue() - 1;  // Safer cast using Number
+                Double revenue = ((Number) result[1]).doubleValue();  // Safe convert
+                if (monthIndex >= 0 && monthIndex < 12) { // Extra safety
+                    monthlyRevenue.set(monthIndex, revenue);
+                }
+            }
         }
 
         return monthlyRevenue;
     }
+
+
+    public List<Object[]> getTopSellingCategories() {
+        return categoryRepository.findTopSellingCategories(PageRequest.of(0, 10));
+    }
+
+
+
+
+
+
 }

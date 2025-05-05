@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WITCHER</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+
+  <!-- Swiper CSS lol yah for the smooth transition-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+
+
+</head>
+<body class="font-sans bg-white">
+<!-- Header -->
+<header class="bg-white shadow">
+  <div class="container mx-auto flex items-center justify-between p-6">
+    <!-- Logo and Brand -->
+    <div class="flex items-center space-x-3">
+      <img class="h-10 w-auto" th:src="@{/img/logo.png}" alt="WITCHER">
+      <a href="/" class="text-3xl md:text-4xl lg:text-5xl font-serif font-semibold text-gray-800 leading-tight py-4">WITCHER</a>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="space-x-6">
+      <a th:href="@{/productPage}" class="text-gray-600 hover:text-gray-800">Shop</a>
+      <a th:href="@{/aboutPage}" class="text-gray-600 hover:text-gray-800">About</a>
+      <a th:href="@{/contactPage}" class="text-gray-600 hover:text-gray-800">Contact</a>
+    </nav>
+
+    <!-- Icons -->
+    <div class="flex items-center space-x-4">
+      <!-- Wishlist -->
+      <a th:href="@{/user/wishlist/}" class="text-gray-700 hover:text-blue-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+        </svg>
+      </a>
+
+      <!-- Cart -->
+      <a th:href="@{/user/cart/}" class="relative text-gray-700 hover:text-blue-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        <span th:if="${cartCount > 0}" th:text="${cartCount}"
+              class="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full">
+        </span>
+      </a>
+
+      <!-- User Icon & Dropdown -->
+      <div class="relative inline-block text-left">
+        <button id="user-menu-button" class="text-gray-700 hover:text-blue-600 focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+        </button>
+
+        <!-- Dropdown -->
+        <div id="dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10 hidden">
+          <div class="p-4">
+            <div class="flex items-center mb-2">
+              <svg class="w-12 h-12 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+              <div>
+                <p class="text-gray-700 font-medium" th:text="${#authentication.name}">User Name</p>
+<!--                <p class="text-gray-500 text-sm">user@example.com</p>-->
+              </div>
+            </div>
+
+            <a th:href="@{/user/profile}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
+            <form th:action="@{/logout}" method="POST" class="px-4 py-2">
+              <input type="submit" value="Logout"
+                     class="w-full text-center py-2 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auth Greetings -->
+      <span th:if="${#authorization.expression('isAuthenticated()')}">
+        <span class="text-gray-700 px-5">Welcome,
+          <strong th:text="${#authentication.principal instanceof T(org.springframework.security.oauth2.core.user.OAuth2User) ?
+                            #authentication.principal.attributes['name'] :
+                            #authentication.name}">
+          </strong>!
+        </span>
+      </span>
+      <span th:if="${#authorization.expression('!isAuthenticated()')}">
+        <a class="button is-primary text-gray-700 px-4 hover:text-blue-600" th:href="@{/login}">
+          <strong>Login</strong>
+        </a>
+      </span>
+
+    </div>
+  </div>
+</header>
+
+
+
+<!-- Hero Slider Section -->
+<section class="relative h-screen">
+  <div class="swiper heroSwiper h-full">
+    <div class="swiper-wrapper">
+
+      <!-- Slide 1 -->
+      <div class="swiper-slide bg-cover bg-center h-full" style="background-image: url('/img/JW_BANNERS_3_b45afdea-eef2-42d1-9c69-efd95de14287_1944x.webp');"
+           th:onclick="'window.location.href=\'' + @{/productPage} + '\''">
+        <div class="container mx-auto flex items-center justify-center h-full">
+          <div class="text-center text-white max-w-3xl">
+            <h1 class="text-5xl font-bold mb-6 leading-tight"> </h1>
+            <p class="mb-8 text-lg"> </p>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="swiper-slide bg-cover bg-center h-full" style="background-image: url('/img/JW_BANNERS_4_205a0548-6673-4ff1-a349-3434c28114eb_1944x.webp');"
+           th:onclick="'window.location.href=\'' + @{/productPage} + '\''">
+        <div class="container mx-auto flex items-center justify-center h-full">
+          <div class="text-center text-white max-w-3xl">
+            <h1 class="text-5xl font-bold mb-6 leading-tight"> </h1>
+            <p class="mb-8 text-lg"> </p>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="swiper-slide bg-cover bg-center h-full" style="background-image: url('/img/JW_BANNERS_4_643459eb-5803-4517-8184-1a4a2e33f988_1944x.webp');"
+           th:onclick="'window.location.href=\'' + @{/productPage} + '\''">
+        <div class="container mx-auto flex items-center justify-center h-full">
+          <div class="text-center text-white max-w-3xl">
+            <h1 class="text-5xl font-bold mb-6 leading-tight"> </h1>
+            <p class="mb-8 text-lg"> .</p>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4 -->
+      <div class="swiper-slide bg-cover bg-center h-full" style="background-image: url('/img/JW_BANNERS_3_c163e575-6988-4bd4-91ef-25a60d387fc6_1944x.webp');"
+           th:onclick="'window.location.href=\'' + @{/productPage} + '\''">
+        <div class="container mx-auto flex items-center justify-center h-full">
+          <div class="text-center text-white max-w-3xl">
+            <h1 class="text-5xl font-bold mb-6 leading-tight"> </h1>
+            <p class="mb-8 text-lg">  </p>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 5 -->
+      <div class="swiper-slide bg-cover bg-center h-full" style="background-image: url('/img/JW_BANNERS_3_aff994ac-35df-46f1-bf26-1a5a324b5f92_1944x.webp');"
+           th:onclick="'window.location.href=\'' + @{/productPage} + '\''">
+        <div class="container mx-auto flex items-center justify-center h-full">
+          <div class="text-center text-white max-w-3xl">
+            <h1 class="text-5xl font-bold mb-6 leading-tight"> </h1>
+            <p class="mb-8 text-lg"> </p>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Arrows -->
+    <div class="swiper-button-next text-white"></div>
+    <div class="swiper-button-prev text-white"></div>
+  </div>
+</section>
+
+
+
+
+<!-- Featured Products -->
+<section class="container mx-auto py-12">
+  <h2 class="text-2xl font-serif text-center text-gray-800 mb-8 tracking-wide">
+    Gen Z & Millennial Approved
+  </h2>
+  <p class="text-lg font-light text-gray-600 text-center">
+    Minimal, Stunning & Trend-setting Global Fashion
+  </p>
+
+<!--  section for -forhim and for her-->
+  <section class="container mx-auto py-12 px-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- For Her -->
+      <div class="relative group overflow-hidden rounded-lg shadow-lg">
+        <img th:src="@{/img/FOR HER.webp}" alt="For Her" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div class="text-center text-white">
+            <h2 class="text-3xl font-bold mb-3 tracking-wide">For Her</h2>
+            <a th:href="@{/products/forHer}" class="px-8 py-3 bg-white text-black text-lg rounded-lg shadow-md hover:bg-gray-100 transition duration-300">
+              Shop Now
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- For Him -->
+      <div class="relative group overflow-hidden rounded-lg shadow-lg">
+        <img th:src="@{/img/FOR HIM.webp}" alt="For Him" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div class="text-center text-white">
+            <h2 class="text-3xl font-bold mb-3 tracking-wide">For Him</h2>
+            <a th:href="@{/products/forHim}" class="px-8 py-3 bg-white text-black text-lg rounded-lg shadow-md hover:bg-gray-100 transition duration-300">
+              Shop Now
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Hero Section 2 -->
+  <section class="bg-cover bg-center" style="background-image: url('/img/JW_BANNERS_84fa6d75-2fe1-40f5-902e-14748e87f2bf_1944x.webp'); height: 100vh;">
+<!--  <div class="container mx-auto flex items-center justify-center h-full">-->
+<!--    <div class="text-center text-white max-w-3xl">-->
+<!--      <h1 class="text-5xl font-bold mb-6 leading-tight">Exclusive Watches & Accessories</h1>-->
+<!--      <p class="mb-8 text-lg">Style, Elegance, and Comfort.</p>-->
+<!--      <a th:href="@{/productPage}" class="px-8 py-4 bg-black text-white rounded-lg text-lg hover:bg-gray-700 transition duration-300">-->
+<!--        Shop Now-->
+<!--      </a>-->
+<!--    </div>-->
+<!--  </div>-->
+</section>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+    <!-- Product 1 -->
+    <div class="text-center">
+      <img th:src="@{/img/teejh_generic_b33ea323-a5c2-4dc3-ad82-a8249b87d7d7_540x.webp}" alt="Couple Watches" class="rounded-lg">
+      <h2 class="text-xl font-serif text-center text-gray-800 mt-4">Couple Watches</h2>
+      <button class="bg-black text-white px-4 py-2 mt-2 rounded">Shop Now</button>
+    </div>
+    <!-- Product 2 -->
+    <div class="text-center">
+      <img th:src="@{/img/watch-bracelet.webp}" alt="Watch Bracelet Stack" class="rounded-lg">
+      <h2 class="text-xl font-serif text-center text-gray-800 mt-4">Watch Bracelet Stack</h2>
+      <button class="bg-black text-white px-4 py-2 mt-2 rounded">Shop Now</button>
+    </div>
+    <!-- Product 3 -->
+    <div class="text-center">
+      <img th:src="@{/img/love-stck.webp}" alt="Love Stacks" class="rounded-lg">
+      <h2 class="text-xl font-serif text-center text-gray-800 mt-4">Love Stacks</h2>
+      <button class="bg-black text-white px-4 py-2 mt-2 rounded">Shop Now</button>
+    </div>
+  </div>
+
+  <!-- Hero Section 3 -->
+  <section class="bg-cover bg-center" style="background-image: url('/img/JW_BANNERS_1_c161c4f8-026e-4627-a3b2-608a0452de03_1944x.webp'); height: 100vh;">
+    <!--  <div class="container mx-auto flex items-center justify-center h-full">-->
+    <!--    <div class="text-center text-white max-w-3xl">-->
+    <!--      <h1 class="text-5xl font-bold mb-6 leading-tight">Exclusive Watches & Accessories</h1>-->
+    <!--      <p class="mb-8 text-lg">Style, Elegance, and Comfort.</p>-->
+    <!--      <a th:href="@{/productPage}" class="px-8 py-4 bg-black text-white rounded-lg text-lg hover:bg-gray-700 transition duration-300">-->
+    <!--        Shop Now-->
+    <!--      </a>-->
+    <!--    </div>-->
+    <!--  </div>-->
+  </section>
+
+<!--last onesssssssssssssssss-->
+  <!-- Featured Products -->
+  <section class="container mx-auto px-4 mt-12">
+    <h2 class="text-3xl font-bold text-center mb-8">Featured Products</h2>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div th:each="product : ${featuredProducts}" class="text-center p-4 border rounded-lg shadow-lg bg-white hover:shadow-2xl transition-shadow duration-300">
+        <img th:src="@{${'/productImage/' + product.imageName}}"
+             th:alt="${product.name}"
+             class="h-60 w-full object-cover object-center rounded-lg mb-4">
+        <h2 class="text-xl font-serif text-gray-800 mt-4 h-16 flex items-center justify-center text-center"
+            th:text="${product.name}"></h2>
+        <p class="text-gray-600 mt-2" th:text="'₹' + ${product.price}"></p>
+        <a th:href="@{/productList/viewProduct/{id}(id=${product.id})}"
+           class="inline-block bg-black text-white px-4 py-2 mt-4 rounded hover:bg-gray-800 transition-colors duration-300">
+          Shop Now
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Big classy gap -->
+  <div class="my-20"></div>
+
+  <!-- Testimonials -->
+  <section class="bg-gray-50 py-16">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12">What Our Customers Say</h2>
+      <div class="flex flex-wrap justify-center gap-8">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-80 hover:shadow-2xl transition-shadow duration-300">
+          <p class="italic text-gray-700">"Amazing quality and great customer service!"</p>
+          <p class="mt-6 font-bold text-gray-900">- Kalki</p>
+        </div>
+        <div class="bg-white p-8 rounded-lg shadow-lg w-80 hover:shadow-2xl transition-shadow duration-300">
+          <p class="italic text-gray-700">"I love the unique designs. Highly recommended."</p>
+          <p class="mt-6 font-bold text-gray-900">- Anjali Sharma</p>
+        </div>
+        <div class="bg-white p-8 rounded-lg shadow-lg w-80 hover:shadow-2xl transition-shadow duration-300">
+          <p class="italic text-gray-700">"Awesome, new collections are here no need to visit multiple sites."</p>
+          <p class="mt-6 font-bold text-gray-900">- Ananya Pandey</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Footer -->
+
+  <footer class="bg-gray-800 p-8 m-0">
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+      <!-- Feedback Section -->
+      <div class="bg-gray-100 p-6 rounded-lg">
+        <h3 class="text-lg font-bold mb-2 text-black">FEEDBACK</h3>
+        <p class="mb-4 text-black">Seeking personalized support? Request a call from our team</p>
+        <form>
+          <input type="email" placeholder="example@email.com" class="w-full p-2 mb-2 border rounded">
+          <input type="text" placeholder="Your name" class="w-full p-2 mb-2 border rounded">
+          <button class="bg-black text-white px-4 py-2 rounded w-full">Send Request</button>
+        </form>
+      </div>
+
+      <!-- Info Section -->
+      <div>
+        <h3 class="text-lg font-bold mb-2 text-gray-300">INFO</h3>
+        <ul class="text-gray-300 space-y-1">
+          <li><a href="#" class="hover:underline">ABOUT US</a></li>
+          <li><a href="#" class="hover:underline">BUSINESS WITH US</a></li>
+          <li><a href="#" class="hover:underline">FAQ</a></li>
+          <li><a href="#" class="hover:underline">WE ARE HIRING!</a></li>
+          <li><a href="#" class="hover:underline">BULLETIN</a></li>
+        </ul>
+      </div>
+
+      <!-- About Us Section -->
+      <div>
+        <h3 class="text-lg font-bold mb-2 text-gray-300">ABOUT US</h3>
+        <ul class="text-gray-300 space-y-1">
+          <li><a href="#" class="hover:underline">CUSTOMER SUPPORT AND POLICIES</a></li>
+          <li><a href="#" class="hover:underline">CONTACT US</a></li>
+          <li><a href="#" class="hover:underline">RETURNS AND REFUNDS</a></li>
+          <li><a href="#" class="hover:underline">TERMS AND CONDITIONS</a></li>
+          <li><a href="#" class="hover:underline">PRIVACY POLICY</a></li>
+        </ul>
+      </div>
+
+      <!-- Social Media Icons -->
+      <div class="flex flex-col justify-between">
+        <div class="flex space-x-4">
+          <a href="#" class="text-gray-200 hover:text-black">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="#" class="text-gray-200 hover:text-black">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="#" class="text-gray-200 hover:text-black">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="#" class="text-gray-200 hover:text-black">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+          </a>
+        </div>
+<!--        <p class="text-sm text-gray-500 mt-4">© 2024 - WITCHER</p>-->
+      </div>
+    </div>
+
+
+  <div class="container mx-auto px-4">
+    <!-- Brand Description -->
+    <div class="text-center text-sm text-white font-light mb-6">
+      <p><strong>FIND YOUR FABULOUS</strong></p>
+      <p class="mt-2">JOKER & WITCH is a New-Age Watch & Jewelry brand for millennials & Gen Z, offering minimal, unique and trend-setting global styles at affordable prices. We believe in the power of Less is More! Our Designs are Minimal, Subtle, and right on trend. Clean Lines, Classic colors & Simplicity define our Design Philosophy. We believe that accessories have the power to transform your Outfit as well as your Outlook. Our designs are inspired by International trends, celebrity looks and high street styles.</p>
+      <p class="mt-4">We strive to create classic go-to styles that last beyond seasons and equally focus on comfort & functionality. We provide irresistible value to our customers by ensuring that every product is in vogue, priced aptly and delivered to their doorstep right on time. We pioneered the concept of curated Watch Bracelet Stacks in India and over the years have mastered the 'Art of Gifting' with our unique Couple Watches, Love Triangles, Love Stacks, and Gift Sets thoughtfully put together by our in-house stylists.</p>
+    </div>
+<br>
+    <!-- Popular Searches Section -->
+    <div class="text-center text-sm text-white font-light mb-6">
+      <p><strong>POPULAR SEARCHES:</strong></p>
+      <p class="mt-2">
+        Watch Charms, Women Watch, Men Watch, Women Jewellery, Men Jewellery, Watch Bracelet Stack, Couple Watches, Love Stack, Love Triangles, Everyday Essentials, Party Essentials, Evening Essentials, Festive Essentials, Formal Essentials, Vacation Essentials, Aimee Series, April Series, Ariana Serie, Classic Series, Drake Series, Ella Series, Nebula Series, Necklaces, Choker, Long Necklaces, Earrings, Hoops, Danglers, Studs, Bracelets, Cuffs, Mantra Bands, Anklets
+      </p>
+    </div>
+<br>
+    <!-- Footer Bottom Section -->
+    <div class="text-center text-white text-xs font-light mt-6">
+      <p>© 2025 Joker & Witch</p>
+      <p>Customers rate us 4.7/5 based on 15225 reviews.</p>
+    </div>
+  </div>
+
+  </footer>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    gsap.timeline()
+      .fromTo("section", { opacity: 0 }, { opacity: 1, duration: 1 })
+      .fromTo("#heroContent", { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 1.5, ease: "power3.out" }, "-=0.5");
+  });
+</script>
+
+<script>
+  const swiper = new Swiper('.heroSwiper', {
+    loop: true,
+    autoplay: {
+      delay: 5000,
+      disableOnInteraction: false,
+    },
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+    effect: 'fade',
+    fadeEffect: {
+      crossFade: true
+    }
+  });
+</script>
+
+
+<script>
+  document.getElementById('user-menu-button').addEventListener('click', function() {
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    dropdownMenu.classList.toggle('show');
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(event) {
+    const target = event.target;
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    const userMenuButton = document.getElementById('user-menu-button');
+
+    if (!userMenuButton.contains(target) && !dropdownMenu.contains(target)) {
+      dropdownMenu.classList.remove('show');
+    }
+  });
+</script>
+
+</section>
+</body>
+</html>

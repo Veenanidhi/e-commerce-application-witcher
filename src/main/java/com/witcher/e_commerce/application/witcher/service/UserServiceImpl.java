@@ -14,7 +14,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,6 +36,10 @@ public class UserServiceImpl implements UserService{
 
     private final EmailService emailService;
 
+    private final Map<String, String> resetTokens = new HashMap<>();
+
+
+
 
 
     @Autowired
@@ -42,6 +50,7 @@ public class UserServiceImpl implements UserService{
         this.verificationTokenService = tokenService;
         this.tokenRepository = tokenRepository;
         this.emailService = emailService;
+
     }
 
     @Override
@@ -58,6 +67,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public User registerUser(User user) {
 
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (userRepository.count() >1){
             user.setRole(Role.ROLE_USER);
@@ -70,6 +80,7 @@ public class UserServiceImpl implements UserService{
         user.setEnabled(false);
         log.info("USER BEFORE SAVING :{}",user);
         Optional<User> saved = Optional.of( save(user));
+
 /*
         // Create and save verification token if the user is saved
         saved.ifPresent(u -> {
@@ -171,7 +182,6 @@ public class UserServiceImpl implements UserService{
     }
 
 
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> userOptional= userRepository.findByEmail(email);
@@ -182,6 +192,48 @@ public class UserServiceImpl implements UserService{
 
         return new CustomUserDetails(user);
     }
+
+
+    public String generateResetToken(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (!optionalUser.isPresent()) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+
+        User user = optionalUser.get();
+        String token = UUID.randomUUID().toString();
+
+        VerificationToken existingToken = tokenRepository.findByUser(optionalUser);
+        if (existingToken != null) {
+            existingToken.setToken(token);
+            existingToken.setExpiryDate(LocalDateTime.now().plusDays(1));
+            tokenRepository.save(existingToken);
+        } else {
+            VerificationToken verificationToken = new VerificationToken(token, user);
+            tokenRepository.save(verificationToken);
+        }
+
+        return token;
+    }
+
+    public boolean validateResetToken(String token) {
+        VerificationToken verificationToken = tokenRepository.findByToken(token);
+        return verificationToken != null && !verificationToken.isExpired();
+    }
+
+    public void updatePassword(String token, String newPassword) {
+        VerificationToken verificationToken = tokenRepository.findByToken(token);
+        if (verificationToken == null || verificationToken.isExpired()) {
+            throw new IllegalArgumentException("Invalid or expired reset token.");
+        }
+
+        User user = verificationToken.getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        tokenRepository.delete(verificationToken);
+    }
+
 
 
 }

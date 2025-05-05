@@ -1,15 +1,18 @@
 package com.witcher.e_commerce.application.witcher.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@Getter
+@Setter
 public class ProductOffer {
 
     @Id
@@ -32,13 +35,14 @@ public class ProductOffer {
 
     private boolean isActive = true;
 
-    @OneToMany(mappedBy = "productOffer",cascade={CascadeType.PERSIST, CascadeType.MERGE},fetch=FetchType.EAGER)
-    private Set<Product> productList = new HashSet<>();
+    @ManyToMany(mappedBy = "productOffers", fetch = FetchType.EAGER)
+    private List<Product> products = new ArrayList<>();
+
 
     public ProductOffer() {
     }
 
-    public ProductOffer(Long productOfferId, String productOfferName, String description, LocalDate startDate, LocalDate expiryDate, Double discountPercentage, boolean isEnabled, boolean isActive, Set<Product> productList) {
+    public ProductOffer(Long productOfferId, String productOfferName, String description, LocalDate startDate, LocalDate expiryDate, Double discountPercentage, boolean isEnabled, boolean isActive, List<Product> products) {
         this.productOfferId = productOfferId;
         this.productOfferName = productOfferName;
         this.description = description;
@@ -47,62 +51,19 @@ public class ProductOffer {
         this.discountPercentage = discountPercentage;
         this.isEnabled = isEnabled;
         this.isActive = isActive;
-        this.productList = productList;
+        this.products = products;
     }
 
-    public ProductOffer(Long productOfferId, String productOfferName, LocalDate startDate, LocalDate expiryDate, Double discountPercentage, boolean isEnabled, boolean isActive, Set<Product> productList) {
-        this.productOfferId = productOfferId;
-        this.productOfferName = productOfferName;
-        this.startDate = startDate;
-        this.expiryDate = expiryDate;
-        this.discountPercentage = discountPercentage;
-        this.isEnabled = isEnabled;
-        this.isActive = isActive;
-        this.productList = productList;
+    public boolean isValid() {
+        LocalDate today = LocalDate.now();
+        return isEnabled && isActive && startDate != null && expiryDate != null &&
+                (today.isEqual(startDate) || today.isAfter(startDate)) &&
+                (today.isEqual(expiryDate) || today.isBefore(expiryDate));
     }
 
-    public Long getProductOfferId() {
-        return productOfferId;
-    }
-
-    public void setProductOfferId(Long productOfferId) {
-        this.productOfferId = productOfferId;
-    }
-
-    public String getProductOfferName() {
-        return productOfferName;
-    }
-
-    public void setProductOfferName(String productOfferName) {
-        this.productOfferName = productOfferName;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(LocalDate expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
-    public Double getDiscountPercentage() {
-        return discountPercentage;
-    }
-
-    public void setDiscountPercentage(Double discountPercentage) {
-        this.discountPercentage = discountPercentage;
-    }
 
     public boolean isEnabled() {
-        return isEnabled;
+        return isEnabled && LocalDate.now().isAfter(startDate) && LocalDate.now().isBefore(expiryDate);
     }
 
     public void setEnabled(boolean enabled) {
@@ -113,25 +74,23 @@ public class ProductOffer {
         return isActive;
     }
 
+    public Double getDiscountPercentage() {
+        return discountPercentage;
+    }
+
+    public void setDiscountPercentage(Double discountPercentage) {
+        this.discountPercentage = discountPercentage;
+    }
+
     public void setActive(boolean active) {
         isActive = active;
     }
 
-    public Set<Product> getProductList() {
-        return productList;
+    public List<Product> getProducts() {
+        return products;
     }
 
-    public String getDescription() {
-        return description;
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setProductList(Set<Product> productList) {
-        this.productList = productList;
-    }
-
-
 }

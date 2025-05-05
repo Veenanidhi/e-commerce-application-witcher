@@ -1,7 +1,9 @@
 package com.witcher.e_commerce.application.witcher.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,31 +15,25 @@ public class Wallet {
     private Double balance= 0.0;
 
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id" ,nullable = false)
+    @JsonBackReference
     private User user;
 
 
     // One Wallet can have many Transactions
-    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Transaction> transactions;
+    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL)
+    private List<WalletTransaction> transactions = new ArrayList<>();
 
     private boolean referralUsed= false;
 
     public Wallet() {
     }
 
-    public Wallet(long walletId, Double balance, User user, List<Transaction> transactions, boolean referralUsed) {
+    public Wallet(long walletId, Double balance, User user, List<WalletTransaction> transactions, boolean referralUsed) {
         this.walletId = walletId;
         this.balance = balance;
         this.user = user;
         this.transactions = transactions;
-        this.referralUsed = referralUsed;
-    }
-
-    public Wallet(long walletId, Double balance, User user, boolean referralUsed) {
-        this.walletId = walletId;
-        this.balance = balance;
-        this.user = user;
         this.referralUsed = referralUsed;
     }
 
@@ -57,11 +53,11 @@ public class Wallet {
         this.balance = balance;
     }
 
-    public List<Transaction> getTransactions() {
+    public List<WalletTransaction> getTransactions() {
         return transactions;
     }
 
-    public void setTransactions(List<Transaction> transactions) {
+    public void setTransactions(List<WalletTransaction> transactions) {
         this.transactions = transactions;
     }
 

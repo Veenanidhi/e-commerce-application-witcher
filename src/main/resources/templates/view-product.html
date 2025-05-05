@@ -172,13 +172,50 @@
         </div>
         <div>
             <h1 th:text="${product.name}" class="text-3xl font-bold mb-10"> </h1>
-            <div class="flex items-center mb-9">
-                <h2>₹ <span  th:text="${product.price}" class="text-2xl font-bold"></span></h2>
 
-                <span class="ml-2 text-gray-500 line-through">$71.56</span>
-                <span class="ml-2 text-red-500">50% OFF</span>
-<!--                <button class="bg-blue-600 text-white px-4 py-2 rounded">Add to Cart</button> -->
+<!--            0000000000000000000000000000000000000000000000000-->
+
+            <div class="flex items-center mb-9">
+                <!-- Logic to determine the best discount -->
+                <h2 th:with="
+        productDiscount = ${product.productOffers != null and !product.productOffers.isEmpty() ? product.price * product.productOffers.get(0).discountPercentage / 100 : 0},
+        categoryDiscount = ${product.category.categoryOffer != null ? product.price * product.category.categoryOffer.discountPercentage / 100 : 0},
+        bestDiscount = ${productDiscount > categoryDiscount ? productDiscount : categoryDiscount},
+        discountedPrice = ${product.price - bestDiscount}">
+
+                    <!-- Show the original price with a strikethrough if there is any discount -->
+                    <h2 th:if="${bestDiscount > 0}" class="text-2xl font-bold">
+                        ₹ <span th:text="${product.price}" class="line-through"></span>
+                    </h2>
+
+                    <!-- Show the discounted price -->
+                    <h2 th:if="${bestDiscount > 0}" class="text-2xl font-bold ml-2">
+                        ₹ <span th:text="${discountedPrice}"></span>
+                    </h2>
+
+                    <!-- If there is a discount, show the percentage off -->
+                    <span th:if="${bestDiscount > 0}" class="ml-2 text-red-500 font-bold">
+            <span th:text="${(bestDiscount / product.price * 100).intValue()} + '%'"></span> OFF
+        </span>
+
+                    <!-- Show only the original price if no discount -->
+                    <h2 th:unless="${bestDiscount > 0}" class="text-2xl font-bold">
+                        ₹ <span th:text="${product.price}"></span>
+                    </h2>
+
+                    <!-- Display the source of the offer -->
+                    <p th:if="${product.productOffers != null and !product.productOffers.isEmpty() and productDiscount >= categoryDiscount}"
+                       class="text-sm text-blue-500">
+                        Offer: Product Offer - <span th:text="${product.productOffers.get(0).productOfferName}"></span>
+                    </p>
+                    <p th:if="${product.category.categoryOffer != null and categoryDiscount > productDiscount}"
+                       class="text-sm text-blue-500">
+                        Offer: Category Offer - <span th:text="${product.category.categoryOffer.categoryOfferName}"></span>
+                    </p>
+                </h2>
             </div>
+
+
 
             <!-- Reviews -->
             <div class="mt-6">
@@ -303,10 +340,10 @@
 <!--            </div>-->
 
 
-            <div class="text-black mb-4">
-                <h2>Free Delivery</h2>
-                <h2>Return Delivery</h2>
-            </div>
+<!--            <div class="text-black mb-4">-->
+<!--                <h2>Free Delivery</h2>-->
+<!--                <h2>Return Delivery</h2>-->
+<!--            </div>-->
 
             <!-- Description -->
             <div class="border-b border-gray-300">

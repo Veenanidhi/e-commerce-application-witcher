@@ -54,7 +54,7 @@ public class AccountController {
     @GetMapping("/verify-otp")
     public String showOtpVerificationPage(@RequestParam("email") String email,Model model){
         model.addAttribute("email", email);
-        return "verify-otp";   // This is the view name for the OTP verification page
+        return "verify-otp";
     }
 
     @PostMapping("/verify-otp")
@@ -92,8 +92,6 @@ public class AccountController {
 
 
 
-
-
     @GetMapping("/activation")
     public String activation(@RequestParam("token") String token, Model model) {
         VerificationToken verificationToken = verificationTokenService.findByToken(token);
@@ -122,6 +120,10 @@ public class AccountController {
         }
         return "activation";
     }
+
+
+
+
 
 
 

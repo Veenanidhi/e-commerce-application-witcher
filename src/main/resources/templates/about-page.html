@@ -69,11 +69,7 @@
                     <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                     </svg>
-                    <!--
-                      Icon when menu is open.
 
-                      Menu open: "block", Menu closed: "hidden"
-                    -->
                     <svg class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -82,11 +78,7 @@
             <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                 <div class="flex flex-shrink-0 items-center">
                     <img th:src="@{/img/logo.png}" alt="logo" class="w-8 h-8"  >
-
-
                     <h1 class="ml-4 font-extrabold text-white">WITCHER</h1>
-
-
                 </div>
                 <div class="hidden sm:ml-6 sm:block">
                     <div class="flex space-x-4 ">
@@ -98,8 +90,8 @@
                     </div>
                 </div>
             </div>
-            <!-- Icons on the right -->
 
+            <!-- Icons on the right -->
 
             <div class="flex items-center space-x-4 ">
                 <a th:href="@{/user/wishlist/}" class="text-white hover:text-blue-500">
@@ -121,6 +113,7 @@
                     </span>
                 </a>
 
+
                 <div class="relative inline-block text-left">
                     <!-- User Icon -->
                     <button id="user-menu-button" class="text-white hover:text-blue-500 focus:outline-none">
@@ -137,10 +130,12 @@
                                 <svg class="w-12 h-12 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                 </svg>
+
                                 <div>
                                     <p class="text-gray-700 font-medium" th:text="${#authentication.name}">User Name</p>
-                                    <p class="text-gray-500 text-sm"3>user@example.com</p>
+                                    <p class="text-gray-500 text-sm">user@example.com</p>
                                 </div>
+
                             </div>
 
                             <!-- Dropdown Items -->
@@ -154,9 +149,6 @@
                     </div>
                 </div>
                 <!--
-
-
-
                             !-- Check if the user is authenticated -->
                 <!--            <span th:if="${#authorization.expression('isAuthenticated()')}">-->
 
@@ -195,8 +187,6 @@
     </a>
 </span>
 
-
-
             </div>
         </div>
     </div>
@@ -206,6 +196,7 @@
 
 
 <!-- About Us Section -->
+
 <section class="py-12 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center">
         <!-- Image Section -->
@@ -221,7 +212,7 @@
         </div>
     </div>
 </section>
-
+ 
 <!-- Our Products Section -->
 
 <section class="py-12 bg-white">
@@ -247,7 +238,7 @@
                 <div class="p-6">
                     <p class="text-lg  font-semibold mb-4">Designed with timeless style and versatility in mind, our products celebrate individuality, with each piece telling a unique story.</p>
                     <p class="font-serif">Every product you choose is a reflection of your style, from watches to personalized quote bracelets.</p>
-                </div>
+                </div>-
             </div>
         </div>
     </div>

@@ -3,6 +3,8 @@ package com.witcher.e_commerce.application.witcher.service.order;
 import com.witcher.e_commerce.application.witcher.entity.Orders;
 import com.witcher.e_commerce.application.witcher.entity.PurchasedOrders;
 import com.witcher.e_commerce.application.witcher.entity.Transaction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,9 +27,9 @@ public interface OrderService {
 
     List<Orders> getOrdersByUser(String username, int page);
 
+
     int getTotalPagesByUser(String username);
 
-     
 
     void cancelOrder(Long id);
 
@@ -40,9 +42,20 @@ public interface OrderService {
 
     void returnOrder(Long id);
 
-    void savePurchasedOrder(PurchasedOrders purchasedOrder);
+    PurchasedOrders savePurchasedOrder(PurchasedOrders purchasedOrder);
 
     void saveTransaction(Transaction transaction);
 
     void deleteCategoryOfferById(Long id);
+
+    PurchasedOrders getPurchasedOrderByOrder(Orders order);
+
+    PurchasedOrders findPurchasedOrderByOrderId(Long orderId);
+
+
+    PurchasedOrders findPurchasedOrderByOrderNumber(String orderNumber);
+
+    Orders findOrderByRazorpayOrderId(String orderId);
+
+//    Orders saveOrder(Long addressId, Long customerId, String paymentMethod, Double amount);
 }

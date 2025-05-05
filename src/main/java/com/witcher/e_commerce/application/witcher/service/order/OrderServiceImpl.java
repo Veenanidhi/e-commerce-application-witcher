@@ -1,14 +1,12 @@
 package com.witcher.e_commerce.application.witcher.service.order;
 
+import com.razorpay.Customer;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
-import com.witcher.e_commerce.application.witcher.dao.CategoryOfferRepository;
-import com.witcher.e_commerce.application.witcher.dao.OrderRepository;
-import com.witcher.e_commerce.application.witcher.dao.PurchasedOrderRepository;
-import com.witcher.e_commerce.application.witcher.dao.TransactionRepository;
+import com.witcher.e_commerce.application.witcher.dao.*;
 import com.witcher.e_commerce.application.witcher.entity.*;
-import com.witcher.e_commerce.application.witcher.service.WalletService;
+import com.witcher.e_commerce.application.witcher.service.wallet.WalletService;
 import jakarta.persistence.EntityNotFoundException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +24,15 @@ import java.util.UUID;
 @Service
 public class OrderServiceImpl implements OrderService{
 
-    private static final int PAGE_SIZE = 500;
+    private static final int PAGE_SIZE = 30;
 
     @Autowired
     private WalletService walletService;
 
     private final OrderRepository orderRepository;
+
+    private final UserRepository userRepository;
+
 
     private final RazorpayClient razorpayClient;
 
@@ -41,8 +42,9 @@ public class OrderServiceImpl implements OrderService{
 
     private final PurchasedOrderRepository purchasedOrderRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, RazorpayClient razorpayClient, CategoryOfferRepository categoryOfferRepository, TransactionRepository transactionRepository, PurchasedOrderRepository purchasedOrderRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, UserRepository userRepository, RazorpayClient razorpayClient, CategoryOfferRepository categoryOfferRepository, TransactionRepository transactionRepository, PurchasedOrderRepository purchasedOrderRepository) {
         this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
         this.razorpayClient = razorpayClient;
         this.categoryOfferRepository = categoryOfferRepository;
         this.transactionRepository = transactionRepository;
@@ -73,15 +75,14 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public List<Orders> getAllOrders() {
-        // You can apply business logic here if needed
         return orderRepository.findAllByOrderByOrderDateDesc();
     }
 
     @Override
     public void updateOrderStatus(Long orderId, String newStatus) {
         Orders order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
-        order.setOrderStatus(newStatus);  // Update the order status
-        orderRepository.save(order);  // Save the updated order
+        order.setOrderStatus(newStatus);
+        orderRepository.save(order);
     }
 
     @Override
@@ -90,6 +91,9 @@ public class OrderServiceImpl implements OrderService{
         Page<Orders> ordersPage = orderRepository.findByUser_Username(username, pageable);
         return ordersPage.getContent();
     }
+
+
+
 
     @Override
     public int getTotalPagesByUser(String username) {
@@ -102,9 +106,9 @@ public class OrderServiceImpl implements OrderService{
         Orders order = orderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid order ID"));
 
-        // Update the order status to 'Cancelled'
+
         order.setOrderStatus("Cancelled");
-        orderRepository.save(order); // Save the updated order status
+        orderRepository.save(order);
     }
 
     @Override
@@ -119,8 +123,8 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public Orders findById(Long orderItemId) {
-        Optional<Orders> optionalOrder = orderRepository.findById(orderItemId); // Use orderItemId here
-        return optionalOrder.orElse(null); // Return null if not found
+        Optional<Orders> optionalOrder = orderRepository.findById(orderItemId);
+        return optionalOrder.orElse(null);
     }
 
     @Override
@@ -133,16 +137,16 @@ public class OrderServiceImpl implements OrderService{
 
         Orders order = ordersOptional.get();
 
-        // Ensure that the order is delivered before processing a return
+
         if (!order.getOrderStatus().equals("Delivered")) {
             throw new IllegalStateException("Cannot return an order that is not delivered.");
         }
 
-        // Update the order status to 'Returned'
+
         order.setOrderStatus("Returned");
 
-        // Optionally, implement business logic such as restocking items, issuing refunds, etc.
-        // For example, restocking the product:
+
+
         order.getProduct().setStock(order.getProduct().getStock() + order.getItemCount());
 
         User user = order.getUser();
@@ -158,13 +162,14 @@ public class OrderServiceImpl implements OrderService{
         wallet.setBalance(wallet.getBalance() + order.getTotalAmount());
         walletService.save(wallet);
 
-        // Save the updated order back to the database
+
         orderRepository.save(order);
     }
 
     @Override
-    public void savePurchasedOrder(PurchasedOrders purchasedOrder) {
+    public PurchasedOrders savePurchasedOrder(PurchasedOrders purchasedOrder) {
         purchasedOrderRepository.save(purchasedOrder);
+        return purchasedOrder;
     }
 
     @Override
@@ -181,6 +186,36 @@ public class OrderServiceImpl implements OrderService{
         } else {
             throw new EntityNotFoundException("Category offer not found with id: " + id);
         }
+    }
+
+    @Override
+    public PurchasedOrders getPurchasedOrderByOrder(Orders order) {
+        return purchasedOrderRepository.findByOrderItemsContaining(order)
+                .orElse(null);
+    }
+
+    @Override
+    public PurchasedOrders findPurchasedOrderByOrderId(Long orderId) {
+        return  purchasedOrderRepository.findById(orderId).orElse(null);
+    }
+
+    @Override
+    public PurchasedOrders findPurchasedOrderByOrderNumber(String orderNumber) {
+        List<PurchasedOrders> allPurchasedOrders = purchasedOrderRepository.findAll();
+
+        for (PurchasedOrders purchasedOrder : allPurchasedOrders) {
+            for (Orders order : purchasedOrder.getOrderItems()) {
+                if (order.getOrderNumber().equals(orderNumber)) {
+                    return purchasedOrder;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Orders findOrderByRazorpayOrderId(String orderId) {
+           return orderRepository.findByRazorpayOrderId(getLastOrder().getRazorpayOrderId());
     }
 
 

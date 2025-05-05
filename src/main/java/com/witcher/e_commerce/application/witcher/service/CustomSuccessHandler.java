@@ -2,18 +2,16 @@ package com.witcher.e_commerce.application.witcher.service;
 
 import com.witcher.e_commerce.application.witcher.dao.UserRepository;
 import com.witcher.e_commerce.application.witcher.entity.User;
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Service;
 
@@ -112,6 +110,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
         redirectBasedOnRoles(authentication, response);
     }
 
+
     private void redirectBasedOnRoles(Authentication authentication, HttpServletResponse response) throws IOException {
         var authorities = authentication.getAuthorities();
         var roles = authorities.stream()
@@ -121,7 +120,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
         if (roles.contains("ROLE_ADMIN")) {
             response.sendRedirect("/admin/dashboard");
         } else if (roles.contains("ROLE_USER") || roles.contains("OIDC_USER")) {
-            response.sendRedirect("/productPage");
+            response.sendRedirect("/landingPage");
         } else {
             response.sendRedirect("/access-denied");
         }

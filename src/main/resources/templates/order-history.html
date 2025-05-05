@@ -2,12 +2,12 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>order history</title>
+    <title>my order - Witcher</title>
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" data-th-href="@{'/css/style.css'}">
-    <script src="https://cdn.tailwindcs3s.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
           theme: {
@@ -177,158 +177,180 @@
         </div>
     </div>
 </nav>
-
-<div class="container mx-auto px-4 py-8">
-    <div class="flex">
+<div class="container mx-auto px-6 py-12">
+    <div class="flex gap-6">
         <!-- Sidebar -->
-        <aside class="w-64 h-screen bg-white shadow-md ">
-            <div class="p-6">
-                <ul class="mt-2 space-y-4">
-                    <li>
-                        <a th:href="@{/user/profile}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm12 0H5v10h10V4z" clip-rule="evenodd"/>
-                            </svg>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a th:href="@{/user/profile/order-history}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 2a1 1 0 00-1 1v2H6a1 1 0 00-1 1v1h10V6a1 1 0 00-1-1h-3V3a1 1 0 00-1-1z" />
-                                <path fill-rule="evenodd" d="M4 9a1 1 0 00-1 1v6a1 1 0 001 1h12a1 1 0 001-1v-6a1 1 0 00-1-1H4z" clip-rule="evenodd" />
-                            </svg>
-                            <span>Order History</span>
-                        </a>
-                    </li>
-<!--                    <li>-->
-<!--                        <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">-->
-<!--                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">-->
-<!--                                <path d="M8 9a1 1 0 00-1 1v6a1 1 0 001 1h4a1 1 0 001-1v-6a1 1 0 00-1-1H8z" />-->
-<!--                                <path fill-rule="evenodd" d="M5 7h10V6a2 2 0 00-2-2H7a2 2 0 00-2 2v1z" clip-rule="evenodd" />-->
-<!--                            </svg>-->
-<!--                            <span>Track Order</span>-->
-<!--                        </a>-->
-<!--                    </li>-->
-                    <li>
-                        <a th:href="@{/user/cart/}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M16 5V3a1 1 0 00-1-1H5a1 1 0 00-1 1v2H2v11h16V5h-2zm-2 0H6V4h8v1z" />
-                            </svg>
-                            <span>Shopping Cart</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a th:href="@{/user/wishlist/}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M6 3a1 1 0 011-1h6a1 1 0 011 1v1H6V3zm1 3V5h6v1H7z" clip-rule="evenodd" />
-                            </svg>
-                            <span>Wishlist</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M12 7v6a2 2 0 11-4 0V7a2 2 0 114 0z" />
-                            </svg>
-                            <span>Wallet</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M4.293 9.293a1 1 0 011.414 0L10 13.586l4.293-4.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                            <span>Log-out</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+        <aside class="w-64 h-screen bg-white shadow-lg rounded-2xl p-6 sticky top-0">
+            <h2 class="text-2xl font-bold text-gray-800 mb-8">My Account</h2>
+            <ul class="space-y-4">
+                <li>
+                    <a th:href="@{/user/profile}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm12 0H5v10h10V4z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/user/profile/order-history}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 2a1 1 0 00-1 1v2H6a1 1 0 00-1 1v1h10V6a1 1 0 00-1-1h-3V3a1 1 0 00-1-1z" />
+                            <path fill-rule="evenodd" d="M4 9a1 1 0 00-1 1v6a1 1 0 001 1h12a1 1 0 001-1v-6a1 1 0 00-1-1H4z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Order History</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/user/cart/}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M16 5V3a1 1 0 00-1-1H5a1 1 0 00-1 1v2H2v11h16V5h-2zm-2 0H6V4h8v1z" />
+                        </svg>
+                        <span>Shopping Cart</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/user/wishlist/}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M6 3a1 1 0 011-1h6a1 1 0 011 1v1H6V3zm1 3V5h6v1H7z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Wishlist</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/user/profile/wallet}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M12 7v6a2 2 0 11-4 0V7a2 2 0 114 0z" />
+                        </svg>
+                        <span>Wallet</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center gap-3 text-red-600 hover:bg-red-50 p-3 rounded-xl transition">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 9.293a1 1 0 011.414 0L10 13.586l4.293-4.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Log-out</span>
+                    </a>
+                </li>
+            </ul>
         </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1">
-        <div class="container mx-auto px-4 py-8">
-            <h3 class="text-serif font-bold text-gray-800 mb-6">Order History</h3>
-            <div class="bg-white shadow-md rounded-lg overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Date & Time</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Status</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        <!-- Main Content -->
+        <main class="flex-1 bg-white rounded-2xl shadow-lg p-10 border border-gray-200">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-8 border-b pb-4 border-gray-200">
+                My Orders
+            </h2>
 
-                        </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                        <!-- Sample order row (repeat this for each order) -->
-                        <tr class="hover:bg-gray-50" th:each="order : ${orders}">
-                            <td class="px-6 py-4 whitespace-nowrap" th:text="${order.product.name}">
-                                <div class="text-sm font-medium text-gray-900">Sample Product</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap" th:text="${#dates.format(order.orderDate, 'yyyy-MM-dd hh:mm a')}">
-                                <div class="text-sm text-gray-500">2023-09-24 02:30 PM</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap" th:text="${order.ItemCount}">
-                                <div class="text-sm text-gray-900">2</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap" th:text="${'₹' + order.product.price}">
-                                <div class="text-sm text-gray-900">₹1000</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap" th:classappend="${order.orderStatus == 'Delivered' ? 'text-green-600' : 'text-red-600'}" th:text="${order.orderStatus}">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Delivered
-                                        </span>
-                            </td>
+            <!-- Orders List -->
+            <div class="space-y-8" th:each="order : ${orders}">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300 flex flex-col md:flex-row">
 
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <form th:if="${order.orderStatus != 'Delivered' && order.orderStatus != 'Returned'}" th:action="@{/user/profile/order/cancel/{id}(id=${order.orderItemId})}" method="post">
-                                    <button type="submit" class="text-red-600 hover:text-red-800">Cancel Order</button>
-                                </form>
+                    <!-- Product Image -->
+                    <div class="md:w-1/4 flex items-center justify-center p-6 border-r border-gray-100">
+                        <img th:src="@{${'/productImage/' + order.product.imageName}}"
+                             alt="Product Image"
+                             class="w-40 h-40 object-cover rounded-xl border border-gray-200">
+                    </div>
 
-                                <!-- Return Order Button for Delivered Orders -->
-                                <form th:if="${order.orderStatus == 'Delivered'}" th:action="@{/user/profile/order/return/{id}(id=${order.orderItemId})}" method="post" onsubmit="return confirmReturn()">
-                                    <button type="submit" class="text-blue-600 hover:text-blue-800">Return Order</button>
-                                </form>
+                    <!-- Order Info -->
+                    <div class="flex-1 p-6 flex flex-col justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-2">
+                                Order Number: <span class="text-gray-800 font-medium" th:text="${order.orderNumber}">#12345</span>
+                            </p>
 
-                            </td>
-                        </tr>
-                        <!-- End of sample order row -->
-                        </tbody>
-                    </table>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2" th:text="${order.product.name}">Product Name</h3>
+
+                            <p class="text-sm text-gray-600 mb-1">
+                                <span class="font-medium">Order Date:</span>
+                                <span th:text="${#dates.format(order.orderDate, 'yyyy-MM-dd hh:mm a')}">2023-09-24 02:30 PM</span>
+                            </p>
+
+                            <p class="text-sm text-gray-600 mt-2">
+                                Quantity: <span th:text="${order.ItemCount}">1</span>
+                            </p>
+
+                            <p class="text-sm text-gray-600">
+                                Price: ₹<span th:text="${order.product.price}">1000</span>
+                            </p>
+
+                            <!-- Status -->
+                            <div class="flex gap-2 mt-4 flex-wrap">
+                <span class="inline-block px-3 py-1 text-xs font-medium rounded-full"
+                      th:classappend="${order.orderStatus == 'Completed' ? 'bg-green-100 text-green-800' : order.orderStatus == 'Processing' ? 'bg-blue-100 text-blue-800' : order.orderStatus == 'Pending' ? 'bg-yellow-100 text-yellow-800' : order.orderStatus == 'Payment Pending' ? 'bg-orange-100 text-orange-800' : order.orderStatus == 'Cancelled' ? 'bg-gray-200 text-gray-700' : order.orderStatus == 'Returned' ? 'bg-purple-100 text-purple-800' : order.orderStatus == 'Failed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}"
+                      th:text="${order.orderStatus}"></span>
+
+                                <span class="inline-block px-3 py-1 text-xs font-medium rounded-full"
+                                      th:if="${order.paymentStatus != null}"
+                                      th:classappend="${order.paymentStatus == 'Success' ? 'bg-green-100 text-green-800' : order.paymentStatus == 'Pending' ? 'bg-yellow-100 text-yellow-800' : order.paymentStatus == 'Failed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}"
+                                      th:text="${order.paymentStatus}"></span>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="mt-6 flex gap-4 flex-wrap">
+                            <form th:if="${order.orderStatus == 'Payment Pending'}" th:action="@{/user/cart/payNow}" method="post">
+                                <input type="hidden" name="orderId" th:value="${order.orderItemId}" />
+                                <button type="submit"
+                                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm px-5 py-2 rounded-full shadow-sm transition-all">
+                                    Pay Again
+                                </button>
+                            </form>
+
+                            <form th:if="${order.orderStatus != 'Delivered' && order.orderStatus != 'Returned' && order.orderStatus != 'Cancelled' && order.orderStatus != 'Payment Pending'}"
+                                  th:action="@{/user/profile/order/cancel/{id}(id=${order.orderItemId})}" method="post">
+                                <button type="submit"
+                                        class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                    Cancel Order
+                                </button>
+                            </form>
+
+                            <form th:if="${order.orderStatus == 'Delivered'}"
+                                  th:action="@{/user/profile/order/return/{id}(id=${order.orderItemId})}" method="post"
+                                  onsubmit="return confirm('Are you sure you want to return this order?');">
+                                <button type="submit"
+                                        class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    Return Order
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
                 </div>
             </div>
 
-            <div th:if="${successMessage}" class="text-green-600">
+            <!-- Pagination -->
+            <div class="mt-10 flex justify-center items-center space-x-2">
+                <a th:href="@{/user/profile/order-history(page=${currentPage - 1})}" th:classappend="${currentPage == 1} ? 'pointer-events-none opacity-50' : ''"
+                   class="px-4 py-2 rounded-full border border-gray-300 bg-white hover:bg-gray-50 text-gray-600 text-sm shadow-sm transition">
+                    ← Prev
+                </a>
+
+                <div class="flex space-x-1">
+                    <a th:each="i : ${#numbers.sequence(1, totalPages)}" th:href="@{/user/profile/order-history(page=${i})}" th:text="${i}"
+                       th:classappend="${i == currentPage} ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
+                       class="px-3 py-1 rounded-full border border-gray-300 text-sm shadow-sm transition">
+                    </a>
+                </div>
+
+                <a th:href="@{/user/profile/order-history(page=${currentPage + 1})}" th:classappend="${currentPage == totalPages} ? 'pointer-events-none opacity-50' : ''"
+                   class="px-4 py-2 rounded-full border border-gray-300 bg-white hover:bg-gray-50 text-gray-600 text-sm shadow-sm transition">
+                    Next →
+                </a>
+            </div>
+
+            <!-- Flash Messages -->
+            <div th:if="${successMessage}" class="mt-6 text-green-600 font-medium text-center">
                 <p th:text="${successMessage}"></p>
             </div>
-            <div th:if="${errorMessage}" class="text-red-600">
+            <div th:if="${errorMessage}" class="mt-6 text-red-600 font-medium text-center">
                 <p th:text="${errorMessage}"></p>
             </div>
 
-
-            <!-- Pagination controls -->
-<!--            <div class="mt-6">-->
-<!--                <nav class="flex justify-between items-center">-->
-<!--                    <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">-->
-<!--                        <-->
-<!--                    </button>-->
-<!--                    -->
-<!--                    <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">-->
-<!--                        >-->
-<!--                    </button>-->
-<!--                </nav>-->
-<!--            </div>-->
-
-        </div>
-    </main>
+        </main>
     </div>
 </div>
+
 
 
 
@@ -422,37 +444,3 @@
 </body>
 </html>
 
-
-<!--<div class="container mx-auto mt-8">-->
-<!--    <h2 class="text-2xl font-bold text-gray-800 mb-6">Order History</h2>-->
-<!--    <table class="min-w-full bg-white border-collapse shadow-md rounded-lg overflow-hidden">-->
-<!--        <thead>-->
-<!--        <tr>-->
-<!--            <th class="border-b text-left py-4 px-6 font-semibold text-gray-800">Product</th>-->
-<!--            <th class="border-b text-left py-4 px-6 font-semibold text-gray-800">Order Date & Time</th>-->
-<!--            <th class="border-b text-left py-4 px-6 font-semibold text-gray-800">Quantity</th>-->
-<!--            <th class="border-b text-left py-4 px-6 font-semibold text-gray-800">Price</th>-->
-<!--            <th class="border-b text-left py-4 px-6 font-semibold text-gray-800">Order Status</th>-->
-<!--        </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        &lt;!&ndash; Loop through each order for the user &ndash;&gt;-->
-<!--        <tr class="hover:bg-gray-50" th:each="order : ${orders}">-->
-<!--            <td class="border-b py-4 px-6" th:text="${order.product.name}"></td>-->
-<!--            <td class="border-b py-4 px-6" th:text="${#dates.format(order.orderDate, 'yyyy-MM-dd hh:mm a')}"></td>-->
-<!--            <td class="border-b py-4 px-6" th:text="${order.ItemCount}"></td>-->
-<!--            <td class="border-b py-4 px-6" th:text="${'₹' + order.product.price}"></td>-->
-<!--            <td class="border-b py-4 px-6" th:classappend="${order.orderStatus == 'Delivered' ? 'text-green-600' : 'text-red-600'}" th:text="${order.orderStatus}"></td>-->
-<!--        </tr>-->
-<!--        </tbody>-->
-<!--    </table>-->
-
-<!--    &lt;!&ndash; Pagination controls (if needed) &ndash;&gt;-->
-<!--    <div class="mt-6">-->
-<!--        <nav class="flex justify-between items-center">-->
-<!--            <button class="bg-gray-300 text-gray-600 py-2 px-4 rounded hover:bg-gray-400">Previous</button>-->
-<!--            <div class="text-gray-600">Page 1 of 5</div>-->
-<!--            <button class="bg-gray-300 text-gray-600 py-2 px-4 rounded hover:bg-gray-400">Next</button>-->
-<!--        </nav>-->
-<!--    </div>-->
-<!--</div>-->

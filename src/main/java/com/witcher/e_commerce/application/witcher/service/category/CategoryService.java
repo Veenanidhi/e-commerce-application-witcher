@@ -1,8 +1,6 @@
 package com.witcher.e_commerce.application.witcher.service.category;
 
-import com.witcher.e_commerce.application.witcher.dto.OfferDTO;
 import com.witcher.e_commerce.application.witcher.entity.Category;
-import com.witcher.e_commerce.application.witcher.entity.CategoryOffer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -23,11 +21,6 @@ public interface CategoryService {
 
     Page<Category> findAllPaginated(Pageable pageable);
 
-    CategoryOffer saveCategoryOffer(OfferDTO offerDTO);
+    List<Category> getAllCategories();
 
-    CategoryOffer findCategoryOfferById(Long id);
-
-    CategoryOffer updateCategoryOffer(OfferDTO offerDTO);
-
-    boolean deleteCategoryOffer(Long id);
 }

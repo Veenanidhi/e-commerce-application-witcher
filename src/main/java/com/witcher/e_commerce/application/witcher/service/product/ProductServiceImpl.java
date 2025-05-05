@@ -1,18 +1,17 @@
 package com.witcher.e_commerce.application.witcher.service.product;
 
+import com.witcher.e_commerce.application.witcher.controller.exception.ProductNotFoundException;
 import com.witcher.e_commerce.application.witcher.dao.ProductOfferRepository;
 import com.witcher.e_commerce.application.witcher.dao.ProductRepository;
-import com.witcher.e_commerce.application.witcher.dto.OfferDTO;
 import com.witcher.e_commerce.application.witcher.entity.Product;
-import com.witcher.e_commerce.application.witcher.entity.ProductOffer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,30 +58,7 @@ public class ProductServiceImpl implements ProductService{
         return productRepository.findAllByCategory_Id(id);
     }
 
-    @Override
-    public ProductOffer saveProductOffer(OfferDTO offerDTO) {
 
-        ProductOffer productOffer= new ProductOffer();
-        productOffer.setProductOfferName(offerDTO.getProductOfferName());
-        productOffer.setDiscountPercentage(offerDTO.getDiscountPercentage());
-        productOffer.setDescription(offerDTO.getDescription());
-
-
-        // Convert String to LocalDate
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Ensure the format matches the date string
-        LocalDate expiryDate = LocalDate.parse(offerDTO.getExpiryDate(), formatter);
-        LocalDate startDate = LocalDate.parse(offerDTO.getStartDate(), formatter);
-
-        productOffer.setExpiryDate(expiryDate);
-        productOffer.setStartDate(startDate);
-
-        productOffer.setActive(true);
-
-        // Save the product offer
-        ProductOffer savedOffer = productOfferRepository.save(productOffer);
-
-        return savedOffer;
-}
 
     @Override
     public Page<Product> findProductsByCategory(Long category, int page, int pageSize) {
@@ -154,24 +130,7 @@ public class ProductServiceImpl implements ProductService{
         productRepository.save(product);
     }
 
-    @Override
-    public ProductOffer updateProductOffer(OfferDTO offerDTO) {
-        ProductOffer existingOffer = productOfferRepository.findById(offerDTO.getProductOfferId())
-                .orElseThrow(() -> new RuntimeException("Offer not found"));
 
-        // Update properties
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate startDate = LocalDate.parse(offerDTO.getStartDate(), formatter);
-        LocalDate expiryDate = LocalDate.parse(offerDTO.getExpiryDate(), formatter);
-        existingOffer.setProductOfferName(offerDTO.getProductOfferName());
-        existingOffer.setDiscountPercentage(offerDTO.getDiscountPercentage());
-        existingOffer.setDescription(offerDTO.getDescription());
-        existingOffer.setProductList(offerDTO.getProductList());
-        existingOffer.getProductList();
-
-        return productOfferRepository.save(existingOffer);
-    }
 
     @Override
     public boolean deleteProductOffer(Long id) {
@@ -181,6 +140,37 @@ public class ProductServiceImpl implements ProductService{
         }
         return false;
     }
+
+    @Override
+    public Product findProductById(Long productId) {
+        Optional<Product> productOptional = productRepository.findById(productId);
+
+        if (productOptional.isPresent()){
+            System.out.println("productttttttttttttttttttttttt" +productOptional.get().getName());
+        }
+
+        // Return the Product if it exists, or throw an exception if not found
+        return productOptional.orElseThrow(() -> new ProductNotFoundException("Product not found for ID: " + productId));
+    }
+
+    @Override
+    public List<Product> getProductsByCategoryKeyword(String keyword, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        return productRepository.findByCategory_NameContainingIgnoreCase(keyword, sort);
+    }
+
+    public Page<Product> filterProductsByPriceRange(Double minPrice, Double maxPrice, Pageable pageable) {
+        return productRepository.findByPriceBetween(minPrice, maxPrice, pageable);
+    }
+
+    public Page<Product> filterProductsByPriceContaining(String priceSearchTerm, Pageable pageable) {
+        return productRepository.findByPriceContaining(priceSearchTerm, pageable);
+    }
+
+
+
+
+
 
 
 }

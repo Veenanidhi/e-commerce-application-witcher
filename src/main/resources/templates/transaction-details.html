@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Transaction Details</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen py-10 px-4" x-data="{ showOrder: false }">
+
+<div class="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-8 border border-gray-200">
+    <h2 class="text-3xl font-semibold text-gray-800 mb-6 border-b pb-2">Transaction Details</h2>
+
+    <div class="space-y-4 text-gray-700 text-base">
+        <div class="flex justify-between">
+            <span class="font-medium">Transaction ID:</span>
+            <span th:text="${transaction.id}"></span>
+        </div>
+
+        <div class="flex justify-between">
+            <span class="font-medium">User:</span>
+            <span th:text="${transaction.wallet.user.username}"></span>
+        </div>
+
+        <div class="flex justify-between">
+            <span class="font-medium">Amount:</span>
+            <span>₹<span th:text="${transaction.amount}"></span></span>
+        </div>
+
+        <div class="flex justify-between">
+            <span class="font-medium">Transaction Type:</span>
+            <span th:text="${transaction.transactionType}"
+                  th:classappend="${transaction.transactionType == 'CREDIT'} ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
+                  class="px-2 py-1 rounded-lg font-medium text-sm">
+    </span>
+        </div>
+
+
+        <div class="flex justify-between">
+            <span class="font-medium">Description:</span>
+            <span th:text="${transaction.description}"></span>
+        </div>
+
+        <div class="flex justify-between">
+            <span class="font-medium">Date:</span>
+            <span th:text="${#temporals.format(transaction.date, 'yyyy-MM-dd HH:mm')}"></span>
+        </div>
+    </div>
+
+<!--    <div class="border-t mt-6 pt-4" th:if="${transaction.description.contains('Cancelled') or transaction.description.contains('Returned')} and ${transaction.order != null}">-->
+<!--    <div class="border-t mt-6 pt-4" th:if="${(transaction.description != null) and (transaction.description.contains('Cancelled') or transaction.description.contains('Returned')) and (transaction.order != null)}">-->
+<!--        <div class="mb-2">-->
+<!--            <a th:href="@{/admin/orders/{id}(id=${transaction.order.orderItemId})}"-->
+<!--               class="inline-block bg-blue-600 text-white px-5 py-2.5 rounded-md font-medium hover:bg-blue-700 transition">-->
+<!--                View Related Order-->
+<!--            </a>-->
+<!--        </div>-->
+
+<!--        <p class="text-gray-600" th:if="${transaction.order != null}">-->
+<!--            <strong>Related Order:</strong> <span th:text="${transaction.order.orderNumber}"></span>-->
+<!--        </p>-->
+<!--    </div>-->
+
+    <div class="mt-8">
+        <a th:href="@{/admin/wallet/transaction}" class="text-indigo-600 hover:underline text-sm">
+            ← Back to Transactions
+        </a>
+    </div>
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <title>Transaction Details</title>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>-->
+
+<!--</head>-->
+<!--<body class="bg-gray-100 p-6" x-data="{ showOrder: false }">-->
+<!--<div class="max-w-3xl mx-auto bg-white shadow-md p-6 rounded-xl">-->
+<!--    <h2 class="text-2xl font-bold mb-4">Transaction Details</h2>-->
+<!--    <div class="space-y-2 text-gray-700">-->
+<!--        <p><strong>ID:</strong> <span th:text="${transaction.id}"></span></p>-->
+<!--        <p><strong>User:</strong> <span th:text="${transaction.wallet.user.username}"></span></p>-->
+<!--        <p><strong>Amount:</strong> ₹<span th:text="${transaction.amount}"></span></p>-->
+<!--        <p><strong>Description:</strong> <span th:text="${transaction.description}"></span></p>-->
+<!--        <p><strong>Date:</strong> <span th:text="${#temporals.format(transaction.date, 'yyyy-MM-dd HH:mm')}"></span></p>-->
+<!--    </div>-->
+
+<!--    <div class="mt-4" th:if="${transaction.description.contains('Cancelled') or transaction.description.contains('Returned')} and ${transaction.order != null}">-->
+<!--        <a th:href="@{/admin/orders/{id}(id=${transaction.order.orderItemId})}"-->
+<!--           class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">-->
+<!--            View Related Order-->
+<!--        </a>-->
+<!--        <p th:if="${transaction.order != null}">-->
+<!--            <strong>Related Order:</strong> <span th:text="${transaction.order.orderNumber}"></span>-->
+<!--        </p>-->
+
+<!--    </div>-->
+
+
+<!--    <div class="mt-6">-->
+<!--        <a th:href="@{/admin/wallet/transaction}" class="text-indigo-600 hover:underline">← Back to transactions</a>-->
+<!--    </div>-->
+
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
+
+

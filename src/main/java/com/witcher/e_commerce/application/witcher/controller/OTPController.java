@@ -3,12 +3,13 @@ package com.witcher.e_commerce.application.witcher.controller;
 import com.witcher.e_commerce.application.witcher.service.EmailService;
 import com.witcher.e_commerce.application.witcher.service.OTPService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@RestController
+@Controller
 @RequestMapping("/api/otp")
 public class OTPController {
 
@@ -29,15 +30,17 @@ public class OTPController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<String> verifyOTP(@RequestParam String email, @RequestParam String otp){
-        boolean isValid= otpService.verifyOTP(email, otp);
-        if (isValid){
-            return ResponseEntity.ok("OTP verified successfully");
-        }
-        else {
-            return ResponseEntity.status(400).body("Invalid or expired otp.");
+    public String verifyOTPWeb(@RequestParam String email, @RequestParam String otp, RedirectAttributes ra) {
+        boolean isValid = otpService.verifyOTP(email, otp);
+        if (isValid) {
+            ra.addFlashAttribute("message", "OTP verified successfully! Please log in.");
+            return "redirect:/login";
+        } else {
+            ra.addFlashAttribute("error", "Invalid or expired OTP.");
+            return "redirect:/verify-otp?email=" + email;
         }
     }
+
 
     @PostMapping("/resend")
     public ResponseEntity<String> resendOTP(@RequestParam String email) {

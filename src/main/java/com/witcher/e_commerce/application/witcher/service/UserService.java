@@ -23,9 +23,15 @@ public interface UserService extends UserDetailsService{
 
     void enableUser(String email);
 
-
     User getCurrentUser();
 
-
     void updateUser(User user);
+
+//reset pass old
+    void updatePassword(String token, String newPassword);
+
+    boolean validateResetToken(String token);
+
+    String generateResetToken(String email);
+
 }

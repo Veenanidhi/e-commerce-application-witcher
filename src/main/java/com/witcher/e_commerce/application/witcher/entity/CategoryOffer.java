@@ -1,14 +1,17 @@
 package com.witcher.e_commerce.application.witcher.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@Data
+@Getter
+@Setter
 public class CategoryOffer {
 
     @Id
@@ -29,15 +32,19 @@ public class CategoryOffer {
 
     private String description;
 
-    private Double discountPercentage;
+    @OneToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id")
+    private Category category;
 
-    @OneToMany(mappedBy = "categoryOffer", cascade = CascadeType.ALL, fetch=FetchType.EAGER)
-    private Set<Category> categories = new HashSet<>();
+    @OneToMany(mappedBy = "categoryOffer")
+    private List<Product> products = new ArrayList<>();
+
+    private Double discountPercentage;
 
     public CategoryOffer() {
     }
 
-    public CategoryOffer(Long categoryOfferId, String categoryOfferName, LocalDate startDate, LocalDate expiryDate, boolean isEnabled, boolean isActive, String description, Double discountPercentage, Set<Category> categories) {
+    public CategoryOffer(Long categoryOfferId, String categoryOfferName, LocalDate startDate, LocalDate expiryDate, boolean isEnabled, boolean isActive, String description, Category category, List<Product> products, Double discountPercentage) {
         this.categoryOfferId = categoryOfferId;
         this.categoryOfferName = categoryOfferName;
         this.startDate = startDate;
@@ -45,28 +52,34 @@ public class CategoryOffer {
         this.isEnabled = isEnabled;
         this.isActive = isActive;
         this.description = description;
+        this.category = category;
+        this.products = products;
         this.discountPercentage = discountPercentage;
-        this.categories = categories;
     }
 
-    public CategoryOffer(Long categoryOfferId, String categoryOfferName, LocalDate startDate, LocalDate expiryDate, boolean isEnabled, boolean isActive, Double discountPercentage, Set<Category> categories) {
-        this.categoryOfferId = categoryOfferId;
-        this.categoryOfferName = categoryOfferName;
-        this.startDate = startDate;
+
+    public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
-        this.isEnabled = isEnabled;
-        this.isActive = isActive;
-        this.discountPercentage = discountPercentage;
-        this.categories = categories;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     public Long getCategoryOfferId() {
         return categoryOfferId;
-    }
-
-    public void addCategory(Category category) {
-        categories.add(category);
-        category.setCategoryOffer(this); // Set the relationship on the owning side
     }
 
     public void setCategoryOfferId(Long categoryOfferId) {
@@ -93,24 +106,28 @@ public class CategoryOffer {
         return expiryDate;
     }
 
-    public void setExpiryDate(LocalDate expiryDate) {
-        this.expiryDate = expiryDate;
+    public String getDescription() {
+        return description;
     }
 
-    public boolean isEnabled() {
-        return isEnabled;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
+    public Category getCategory() {
+        return category;
     }
 
-    public boolean isActive() {
-        return isActive;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
-    public void setActive(boolean active) {
-        isActive = active;
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 
     public Double getDiscountPercentage() {
@@ -120,31 +137,4 @@ public class CategoryOffer {
     public void setDiscountPercentage(Double discountPercentage) {
         this.discountPercentage = discountPercentage;
     }
-
-    public Set<Category> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(Set<Category> categories) {
-        this.categories = categories;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String getDiscription) {
-    }
-
-    public void setStartDate(String startDate, DateTimeFormatter formatter) {
-    }
-
-    public void setExpiryDate(String expiryDate, DateTimeFormatter formatter) {
-    }
-
-
-
-
-
-
 }

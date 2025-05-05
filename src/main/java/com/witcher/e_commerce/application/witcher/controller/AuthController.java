@@ -1,8 +1,8 @@
 package com.witcher.e_commerce.application.witcher.controller;
 
 import com.witcher.e_commerce.application.witcher.cartlogic.CartData;
+import com.witcher.e_commerce.application.witcher.entity.Category;
 import com.witcher.e_commerce.application.witcher.entity.Product;
-import com.witcher.e_commerce.application.witcher.entity.ProductOffer;
 import com.witcher.e_commerce.application.witcher.entity.User;
 import com.witcher.e_commerce.application.witcher.service.EmailService;
 import com.witcher.e_commerce.application.witcher.service.OTPService;
@@ -11,7 +11,6 @@ import com.witcher.e_commerce.application.witcher.service.category.CategoryServi
 import com.witcher.e_commerce.application.witcher.service.product.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,9 +26,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 public class AuthController {
@@ -45,6 +43,7 @@ public class AuthController {
 
     private final ProductService productService;
 
+
     @Autowired
     public AuthController(UserService userService, EmailService emailService, OTPService otpService, CategoryService categoryService, ProductService productService){
         this.userService=userService;
@@ -54,21 +53,6 @@ public class AuthController {
         this.productService = productService;
     }
 
-
-
-
-//    @GetMapping("/login")
-//    public String showLogin(){
-//
-//        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
-//
-//        if(authentication==null || authentication instanceof AnonymousAuthenticationToken){
-//            return "login";
-//        }
-//
-//        return "redirect:/product-listing";
-//
-//    }
 
     @GetMapping("/login")
     public String showLogin(HttpServletRequest request) {
@@ -93,7 +77,6 @@ public class AuthController {
 
 
 
-
     @GetMapping("/login-error")
     public String loginError(Model model) {
         model.addAttribute("loginError", true);
@@ -114,6 +97,7 @@ public class AuthController {
     @PostMapping("/processSignUpPage")
     public String processSignUpPage(
             @ModelAttribute("webUser") User theWebUser,
+            @RequestParam(value = "referralCode", required = false) String referralCode,
             BindingResult theBindingResult,
             RedirectAttributes ra,
             Model theModel,
@@ -121,43 +105,73 @@ public class AuthController {
     ){
 
 
-        // Check if signup is in progress
+
         Boolean signupInProgress = (Boolean) session.getAttribute("signupInProgress");
         if (signupInProgress == null || !signupInProgress) {
-            return "redirect:/signup"; // Redirect if session is not initialized properly
+            return "redirect:/signup";
         }
 
 
         if (theBindingResult.hasErrors()) {
-            return "signup"; // Return to the signup page if there are validation errors
-        }
-
-        //to check the username is already taken
-        boolean existingUser=userService.existsByUsername(theWebUser.getUsername());
-        if (existingUser){
-            theModel.addAttribute("webUser",new User());
-            theModel.addAttribute("signupError","Username already exists!!!");
-            return "redirect:/signup";
-        }
-
-        boolean existingEmail= userService.existsByEmail(theWebUser.getEmail());
-        if (existingEmail){
-            theModel.addAttribute("message","Email already exists");
             return "signup";
         }
 
-        //save the new user
+        //to check the username is already taken
+//        boolean existingUser=userService.existsByUsername(theWebUser.getUsername());
+//        if (existingUser){
+//            theModel.addAttribute("webUser",new User());
+//            theModel.addAttribute("signupError","Username already exists!!!");
+//            return "redirect:/signup";
+//        }
+//
+//        boolean existingEmail= userService.existsByEmail(theWebUser.getEmail());
+//        if (existingEmail){
+//            theModel.addAttribute("message","Email already exists");
+//            return "signup";
+//        }
+
+        boolean existingUser = userService.existsByUsername(theWebUser.getUsername());
+        if (existingUser) {
+
+            theBindingResult.rejectValue("username", "error.username", "Username already exists!");
+            return "signup";
+        }
+
+        // Email validation - consistent approach
+        boolean existingEmail = userService.existsByEmail(theWebUser.getEmail());
+        if (existingEmail) {
+            theBindingResult.rejectValue("email", "error.email", "Email already exists!");
+            return "signup"; // Return to form with error
+        }
+
+
         userService.registerUser(theWebUser);
 
-        //generate and snd otp
+
         String otp= otpService.generateOTP(theWebUser.getEmail());
         emailService.sendOTPEmail(theWebUser.getEmail(),otp);
 
-        //redirect to otp verification pge with a success msg
+
         ra.addFlashAttribute("message", "An activation mail is sent to your email. Please enter the OTP to verify your account");
         return "redirect:/verify-otp?email=" +theWebUser.getEmail();
     }
 
+    @GetMapping("/landingPage")
+    public String landingPage(Model model){
+
+        List<Product> allProducts = productService.getAllProduct();
+        List<Product> featuredProducts = allProducts.stream()
+                .sorted(Comparator.comparing(Product::getId).reversed()) // Sort by ID desc
+                .limit(4)
+                .toList();
+
+        List<Category> categories = categoryService.findAll();
+
+        model.addAttribute("featuredProducts", featuredProducts);
+        model.addAttribute("categories", categories);
+
+        return "landingPage";
+    }
 
 
     @GetMapping("/access-denied")
@@ -177,30 +191,43 @@ public class AuthController {
     @GetMapping("/productPage")
     public  String showShop(Model model, HttpSession session,
                             @RequestParam(defaultValue = "0") int page,
-                            @RequestParam(defaultValue = "28") int pageSize,
+                            @RequestParam(defaultValue = "12") int pageSize,
                             @RequestParam(name ="category",required=false) Long category,
                             @RequestParam(name = "searchTerm", required = false) String searchTerm,
                             @RequestParam(name = "size", required = false) String size,
                             @RequestParam(name = "color", required = false) String color,
-                            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy, //Default sort by id
-                            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDir ) {  //default sort direction
+                            @RequestParam(name = "minPrice", required = false) Double minPrice,
+                            @RequestParam(name = "maxPrice", required = false) Double maxPrice,
+                            @RequestParam(name = "price", required = false) String priceSearchTerm,
+                            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
+                            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDir ) {
 
 
 
         model.addAttribute("cartCount", CartData.cart.size());
 
-        // Create a Sort object using sortBy and sortDir
+
         Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
 
 
-        // Create a Pageable object using page and pageSize
+
         Pageable pageable = PageRequest.of(page, pageSize, sort);
 
         Page<Product> productsPage;
 
+
         if (searchTerm != null && !searchTerm.isEmpty()) {
-            productsPage = productService.searchProductsByNameOrDescription(searchTerm, pageable);
+
+//            productsPage = productService.searchProductsByNameOrDescription(searchTerm, pageable);
+            try {
+                // Check if the search term is a number → treat as price
+                Double.parseDouble(searchTerm);
+                productsPage = productService.filterProductsByPriceContaining(searchTerm, pageable);
+            } catch (NumberFormatException e) {
+                // Not a number → treat as name/description
+                productsPage = productService.searchProductsByNameOrDescription(searchTerm, pageable);
+            }
             model.addAttribute("searchTerm", searchTerm);
         } else if (category != null) {
             productsPage = productService.findProductsByCategory(category, pageable);
@@ -218,61 +245,54 @@ public class AuthController {
             productsPage = productService.findProductsByColorEquals(color, pageable);
             model.addAttribute("selectedColor", color);
         }
+        else if (minPrice != null && maxPrice != null) {
+            productsPage = productService.filterProductsByPriceRange(minPrice, maxPrice, pageable);
+            model.addAttribute("minPrice", minPrice);
+            model.addAttribute("maxPrice", maxPrice);
+        }
         else {
             productsPage = productService.findAllProducts(pageable);
         }
 
 
-
-
-        // Fetch available sizes and colors for filters
         List<String> availableSizes = productService.findAllAvailableSizes();
         List<String> availableColors = productService.findAllAvailableColors();
 
 
-        Map<Long, Double> discountedPrices = new HashMap<>();
-
-        for (Product product : productsPage.getContent()) {
-            ProductOffer offer = product.getProductOffer();
-            if (offer != null && offer.isEnabled() && offer.isActive() &&
-                    LocalDate.now().isAfter(offer.getStartDate()) &&
-                    LocalDate.now().isBefore(offer.getExpiryDate())) {
-
-                double discount = offer.getDiscountPercentage();
-                double discountedPrice = product.getPrice() * (1 - discount / 100);
-                discountedPrices.put(product.getId(), discountedPrice);
-            }
-        }
-
-        for (Product product : productsPage.getContent()) {
-            String categoryOfferName;
-            if (product.getCategory().getCategoryOffer() != null && product.getCategory().getCategoryOffer().getDiscountPercentage() != null) {
-                categoryOfferName = String.valueOf(product.getCategory().getCategoryOffer().getDiscountPercentage());
-            } else {
-                categoryOfferName = "no offer";
-            }
-
-//            System.out.println("product name = " + product.getName()
-//                    + " category name = " + product.getCategory().getName()
-//                    + " category offer = " + categoryOfferName);
-        }
 
 
 
-        //  model.addAttribute("categoryList",categoryList);
         model.addAttribute("products", productsPage.getContent());
+        model.addAttribute("currentDate", LocalDate.now());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", productsPage.getTotalPages());
         model.addAttribute("categories", categoryService.findAll());
-        model.addAttribute("sizes", availableSizes); // Add sizes to model
-        model.addAttribute("colors", availableColors); // Add colors to model
+        model.addAttribute("sizes", availableSizes);
+        model.addAttribute("colors", availableColors);
 
-//        Integer cartCount = (Integer) session.getAttribute("cartCount");
-//        int cartCountValue = (cartCount != null) ? cartCount.intValue() : 0;
-//        model.addAttribute("cartCount", cartCountValue);
 
         return "product-listing";
     }
+
+    @GetMapping("/products/forHer")
+    public String getForHerProducts(Model model,
+                                    @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
+                                    @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir) {
+        List<Product> products = productService.getProductsByCategoryKeyword("women", sortBy, sortDir);
+        model.addAttribute("products", products);
+        return "product-listing";
+    }
+
+    @GetMapping("/products/forHim")
+    public String getForHimProducts(Model model,
+                                    @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
+                                    @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir) {
+        List<Product> products = productService.getProductsByCategoryKeyword("men", sortBy, sortDir);
+        model.addAttribute("products", products);
+        return "product-listing";
+    }
+
+
 
 
 
@@ -292,6 +312,7 @@ public class AuthController {
         model.addAttribute("product", productService.getProductById(id).get());
         return "view-product";
     }
+
 
 
     @GetMapping("/aboutPage")
@@ -315,31 +336,52 @@ public class AuthController {
 
 
 
+
+
+
+
+//    @GetMapping("/forgot-password")
+//    public String showForgotPasswordPage() {
+//        return "forgot-password";
+//    }
+//
+//    @PostMapping("/forgot-password")
+//    public String processForgotPassword(@RequestParam("email") String email, Model model) {
+//        try {
+//            String token = userService.generateResetToken(email);
+//            String resetLink = "http://localhost:8080/reset-password?token=" + token;
+//            emailService.sendEmail(email, "Password Reset", "Click here to reset your password: " + resetLink);
+//            model.addAttribute("message", "A password reset link has been sent to your email.");
+//        } catch (Exception e) {
+//            model.addAttribute("error", "Email address not found.");
+//        }
+//        return "forgot-password";
+//    }
+//
+//    @GetMapping("/reset-password")
+//    public String showResetPasswordPage(@RequestParam("token") String token, Model model) {
+//        System.out.println("Received Token: " + token);
+//        boolean isValidToken = userService.validateResetToken(token);
+//        if (!isValidToken) {
+//            model.addAttribute("error", "Invalid or expired token.");
+//            return "error-page";
+//        }
+//        model.addAttribute("token", token);
+//        return "reset-password";
+//    }
+//
+//    @PostMapping("/reset-password")
+//    public String processResetPassword(@RequestParam("token") String token, @RequestParam("newPassword") String newPassword, Model model) {
+//        try {
+//            userService.updatePassword(token, newPassword);
+//            model.addAttribute("message", "Password successfully reset.");
+//            return "login";
+//        } catch (Exception e) {
+//            model.addAttribute("error", "Error resetting password.");
+//            return "reset-password";
+//        }
+//    }
+//
+
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

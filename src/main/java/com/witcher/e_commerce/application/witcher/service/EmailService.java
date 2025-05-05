@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 public class EmailService {
@@ -38,7 +40,7 @@ public class EmailService {
 
 
     public void sendHtmlMail(User user) throws MessagingException {
-        VerificationToken verificationToken = verificationTokenRepository.findByUser(user);
+        VerificationToken verificationToken = verificationTokenRepository.findByUser(Optional.ofNullable(user));
         //check if the user has a token
         if (verificationToken != null) {
             log.info("user verification token {}", verificationToken.getToken());
@@ -70,25 +72,56 @@ public class EmailService {
         javaMailSender.send(message);
     }
 
+    // Resend OTP Functionality
+    public String resendOTP(String email) {
+        log.info("Resending OTP to email: {}", email);
 
-//    public void sendOTPEmail(String email, String otp) {
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setTo(email);
-//        message.setSubject("Secure One-Time Password (OTP) for Your Account");
-//
-//        String emailBody =
-//                "Dear Valued User,\n\n" +
-//                        "As requested, here is your One-Time Password (OTP) for account verification:\n\n" +
-//                        "OTP: " + otp       + "\n\n" +
-//                        "Please note:\n" +
-//                        "- This OTP is valid for 5 minutes from the time of this email.\n" +
-//                        "- For security reasons, do not share this OTP with anyone.\n" +
-//                        "- If you did not request this OTP, please contact our support team immediately.\n\n" +
-//                        "If you have any questions or concerns, please don't hesitate to reach out to our customer support.\n\n" +
-//                        "Best regards,\n" +
-//                        "Your Security Team";
-//
-//        message.setText(emailBody);
-//        javaMailSender.send(message);
-//    }
+        // Check if the user already has an OTP in the repository
+        VerificationToken existingToken = verificationTokenRepository.findByEmail(email);
+
+        if (existingToken != null && !existingToken.isExpired()) {
+            log.info("Existing OTP for email: {}", email);
+            String otp = existingToken.getToken();
+
+            // Resend the existing OTP
+            sendOTPEmail(email, otp);
+            return "OTP resent successfully to: " + email;
+        } else {
+            // Generate a new OTP if none exists or if the old one has expired
+            log.info("Generating a new OTP for email: {}", email);
+            String newOtp = verificationTokenService.generateNewOTP(email);
+
+            // Save the new OTP in the database
+            VerificationToken newToken = verificationTokenService.createVerificationToken(email, newOtp);
+            verificationTokenRepository.save(newToken);
+
+            // Send the new OTP
+            sendOTPEmail(email, newOtp);
+            return "New OTP sent successfully to: " + email;
+        }
+    }
+
+    public void sendEmail(String to, String subject, String content) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(content, true);
+            javaMailSender.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send email", e);
+        }
+    }
+
+
+
 }
+
+
+
+
+
+
+
+

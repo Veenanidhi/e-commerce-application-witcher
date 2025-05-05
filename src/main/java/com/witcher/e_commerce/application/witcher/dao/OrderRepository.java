@@ -1,20 +1,23 @@
 package com.witcher.e_commerce.application.witcher.dao;
 
 import com.witcher.e_commerce.application.witcher.entity.Orders;
+import com.witcher.e_commerce.application.witcher.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Orders, Long> {
 
-    Orders findTopByOrderByOrderItemIdDesc(); // Fetch the last order
+    Orders findTopByOrderByOrderItemIdDesc();
 
     // Find all orders for a specific user with pagination
     Page<Orders> findByUser_Username(String username, Pageable pageable);
@@ -42,4 +45,23 @@ public interface OrderRepository extends JpaRepository<Orders, Long> {
 
 
     List<Orders> findAllByOrderByOrderDateDesc();
+
+    @Query("SELECT o FROM Orders o WHERE o.orderDate BETWEEN :startDate AND :endDate")
+    List<Orders> findOrdersWithinDateRange(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    @Query("SELECT SUM(o.totalAmount) FROM Orders o WHERE o.orderDate BETWEEN :startDate AND :endDate")
+    Double findRevenueWithinDateRange(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    @Query("SELECT SUM(o.ItemCount) FROM Orders o WHERE o.orderDate BETWEEN :startDate AND :endDate")
+    Integer findSalesWithinDateRange(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    Orders findByRazorpayOrderId(String razorpayOrderId);
+
+    Page<Orders> findByUser(User user, Pageable pageable);
+
+
+
+
+
+
 }

@@ -1,6 +1,10 @@
 package com.witcher.e_commerce.application.witcher.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -33,9 +37,6 @@ public class Product {
     @Column(name = "price")
     private double price;
 
-    //@Column(name = "status")
-    //private String status;
-
     @Column(name = "stock")
     private String stock;
 
@@ -50,14 +51,25 @@ public class Product {
     @ManyToMany(mappedBy = "products")
     private List<Wishlist> wishlists = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "productOfferId" )
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
-    private ProductOffer productOffer;
-
-    private double DiscountedPrice;
+    @NotNull
+    @Min(0)
+    @Max(100)
+    private double discountedPrice;
 
     private boolean isDeleted=false;
+
+    @ManyToMany
+    @JoinTable(
+            name = "product_product_offer",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_offer_id")
+    )
+    private List<ProductOffer> productOffers = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "category_offer_id", referencedColumnName = "categoryOfferId")
+    private CategoryOffer categoryOffer;
+
     public boolean isDeleted() {
         return isDeleted;
     }
@@ -72,6 +84,31 @@ public class Product {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<ProductOffer> getProductOffers() {
+        return productOffers;
+    }
+
+    public void setProductOffers(List<ProductOffer> productOffers) {
+        this.productOffers = productOffers;
+    }
+
+    public double getDiscountedPrice() {
+        if (productOffers != null) {
+            for (ProductOffer offer : productOffers) {
+                if (offer.isEnabled() && offer.isActive()) {
+                    return price - (price * offer.getDiscountPercentage() / 100);
+                }
+            }
+        }
+        return price;
+
+
+
+
+
+
     }
 
 

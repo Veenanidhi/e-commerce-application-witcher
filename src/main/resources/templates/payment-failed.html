@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Payment Failed</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<div class="bg-white p-10 rounded-lg shadow-xl text-center max-w-md w-full">
+  <h1 class="text-3xl font-bold text-red-600 mb-4">Payment Failed</h1>
+  <p class="text-gray-700 text-lg mb-6" th:text="${message}">Something went wrong while processing your payment.</p>
+  <a th:href="/checkout" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-md font-semibold">Try Again</a>
+</div>
+</body>
+</html>

@@ -3,6 +3,7 @@ package com.witcher.e_commerce.application.witcher.dao;
 import com.witcher.e_commerce.application.witcher.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -52,5 +53,17 @@ List<Product> searchProducts(@Param("keyword") String keyword);
     Page<Product> findByColorEquals(String color, Pageable pageable);
 
     Optional<Product> getProductById(Long id);
+
+    List<Product> findByCategory_NameContainingIgnoreCase(String keyword, Sort sort);
+
+    public Page<Product> findByPriceBetween(Double minPrice, Double maxPrice, Pageable pageable);
+
+    @Query("SELECT p FROM Product p WHERE CAST(p.price AS string) LIKE %?1%")
+    public Page<Product> findByPriceContaining(String priceSearchTerm, Pageable pageable);
+
+
+
+
+
 
 }

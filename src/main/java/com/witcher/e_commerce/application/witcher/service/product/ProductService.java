@@ -1,8 +1,6 @@
 package com.witcher.e_commerce.application.witcher.service.product;
 
-import com.witcher.e_commerce.application.witcher.dto.OfferDTO;
 import com.witcher.e_commerce.application.witcher.entity.Product;
-import com.witcher.e_commerce.application.witcher.entity.ProductOffer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -11,19 +9,19 @@ import java.util.Optional;
 
 public interface ProductService {
 
-public List<Product> getAllProduct();
+        public List<Product> getAllProduct();
 
-public Page<Product> getProducts(Pageable pageable);
+        public Page<Product> getProducts(Pageable pageable);
 
-public void addProduct(Product product);
+        public void addProduct(Product product);
 
-public void removeProductById(Long id);
+        public void removeProductById(Long id);
 
-public Optional <Product> getProductById(Long id);
+        public Optional <Product> getProductById(Long id);
 
-public List<Product> getAllProductsByCategoryId(Long id);
+        public List<Product> getAllProductsByCategoryId(Long id);
 
-    ProductOffer saveProductOffer(OfferDTO offerDTO);
+
 
     Page<Product> findProductsByCategory(Long category, int page, int pageSize);
 
@@ -52,7 +50,16 @@ public List<Product> getAllProductsByCategoryId(Long id);
 
     void saveProduct(Product product);
 
-    ProductOffer updateProductOffer(OfferDTO offerDTO);
 
     boolean deleteProductOffer(Long id);
+
+    Product findProductById(Long productId);
+
+
+    List<Product> getProductsByCategoryKeyword(String keyword, String sortBy, String sortDir);
+
+
+    Page<Product> filterProductsByPriceRange(Double minPrice, Double maxPrice, Pageable pageable);
+
+    Page<Product> filterProductsByPriceContaining(String priceSearchTerm, Pageable pageable);
 }

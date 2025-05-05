@@ -1,78 +1,183 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <title>Wallet - Witcher</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallet</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<div class="bg-white rounded-lg shadow-lg p-8 max-w-4xl">
-    <!-- Wallet Balance Section -->
-    <div class="flex justify-between items-center mb-8">
-        <div class="flex items-center space-x-4">
-            <div class="bg-green-100 p-4 rounded-full">
-                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-                </svg>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        clifford: '#da373d',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+<!-- ========== Navbar ========== -->
+<nav class="bg-gray-800 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <!-- Left: Logo + Title -->
+            <div class="flex items-center space-x-3">
+                <img th:src="@{/img/logo.png}" alt="Witcher Logo" class="w-8 h-8">
+                <h1 class="text-xl font-bold">WITCHER</h1>
             </div>
-            <div>
-                <h2 class="text-3xl font-semibold">₹16,000</h2>
-                <p class="text-gray-500">My Wallet Balance</p>
+
+            <!-- Center: Navigation Links -->
+            <div class="hidden sm:flex space-x-4">
+                <a th:href="@{/productPage}" class="hover:text-blue-400">Home</a>
+                <a href="#" class="hover:text-blue-400">Contact</a>
+                <a href="#" class="hover:text-blue-400">About</a>
+            </div>
+
+            <!-- Right: Icons + Auth -->
+            <div class="flex items-center space-x-4">
+                <!-- Wishlist Icon -->
+                <a href="#" class="hover:text-blue-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </a>
+
+                <!-- Cart Icon -->
+                <a th:href="@{/user/cart/}" class="relative hover:text-blue-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span th:if="${cartCount > 0}"
+                          th:text="${cartCount}"
+                          class="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold bg-red-500 rounded-full">
+                    </span>
+                </a>
+
+                <!-- Auth Greeting -->
+                <span th:if="${#authorization.expression('isAuthenticated()')}" class="text-sm px-2">
+                    Welcome,
+                    <strong th:text="${#authentication.principal instanceof T(org.springframework.security.oauth2.core.user.OAuth2User) ?
+                                    #authentication.principal.attributes['name'] :
+                                    #authentication.name}">
+                    </strong>
+                </span>
+                <span th:if="${#authorization.expression('!isAuthenticated()')}">
+                    <a class="px-4 py-1 bg-blue-600 rounded hover:bg-blue-700" th:href="@{/login}">Login</a>
+                </span>
             </div>
         </div>
-        <button class="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800">
-            Add Money
-        </button>
     </div>
+</nav>
 
-    <!-- Transaction Details Section -->
-    <div class="overflow-hidden border border-gray-200 rounded-lg">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-            <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Transaction ID
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Description
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
-                </th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Withdrawal
-                </th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Deposit
-                </th>
-            </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-            <!-- Example row -->
-            <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">#96459781</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Return</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Dec 30, 2023</td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-red-600">₹6,000</td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">-</td>
-            </tr>
-            <!-- Add more rows as needed -->
-            </tbody>
-        </table>
-    </div>
+<!-- ========== Main Content ========== -->
+<main class="max-w-6xl mx-auto p-8 flex gap-8">
+    <!-- Sidebar -->
+    <aside class="w-64 h-fit bg-white shadow-sm rounded-2xl p-6 sticky top-6 border border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-800 mb-8">My Account</h2>
+        <ul class="space-y-2">
+            <li>
+                <a th:href="@{/user/profile}" class="flex items-center gap-3 text-gray-700 hover:bg-gray-50 p-3 rounded-xl transition">
+                    <svg class="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm12 0H5v10h10V4z" clip-rule="evenodd" />
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/user/profile/order-history}" class="flex items-center gap-3 text-gray-700 hover:bg-gray-50 p-3 rounded-xl transition">
+                    <svg class="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a1 1 0 00-1 1v2H6a1 1 0 00-1 1v1h10V6a1 1 0 00-1-1h-3V3a1 1 0 00-1-1z" />
+                        <path fill-rule="evenodd" d="M4 9a1 1 0 00-1 1v6a1 1 0 001 1h12a1 1 0 001-1v-6a1 1 0 00-1-1H4z" clip-rule="evenodd" />
+                    </svg>
+                    <span>Order History</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/user/cart/}" class="flex items-center gap-3 text-gray-700 hover:bg-gray-50 p-3 rounded-xl transition">
+                    <svg class="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M16 5V3a1 1 0 00-1-1H5a1 1 0 00-1 1v2H2v11h16V5h-2zm-2 0H6V4h8v1z" />
+                    </svg>
+                    <span>Shopping Cart</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/user/wishlist/}" class="flex items-center gap-3 text-gray-700 hover:bg-gray-50 p-3 rounded-xl transition">
+                    <svg class="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6 3a1 1 0 011-1h6a1 1 0 011 1v1H6V3zm1 3V5h6v1H7z" clip-rule="evenodd" />
+                    </svg>
+                    <span>Wishlist</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/user/profile/wallet}" class="flex items-center gap-3 text-blue-600 bg-blue-50 p-3 rounded-xl transition font-medium">
+                    <svg class="h-5 w-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M12 7v6a2 2 0 11-4 0V7a2 2 0 114 0z" />
+                    </svg>
+                    <span>Wallet</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="flex items-center gap-3 text-red-600 hover:bg-red-50 p-3 rounded-xl transition">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 9.293a1 1 0 011.414 0L10 13.586l4.293-4.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    <span>Log-out</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
 
-    <!-- Pagination Section -->
-    <div class="flex justify-center mt-6 space-x-2">
-        <button class="px-3 py-1 bg-gray-200 rounded-full">1</button>
-        <button class="px-3 py-1 bg-gray-200 rounded-full">2</button>
-        <button class="px-3 py-1 bg-gray-200 rounded-full">3</button>
-        <button class="px-3 py-1 bg-gray-200 rounded-full">4</button>
-        <button class="px-3 py-1 bg-gray-200 rounded-full">5</button>
+    <!-- Wallet Section -->
+    <div class="flex-1 space-y-8">
+        <!-- Wallet Balance -->
+        <div class="flex justify-end">
+            <div class="bg-green-50 text-green-700 px-6 py-4 rounded-2xl shadow-sm text-xl font-semibold border border-green-200">
+                Wallet Balance: ₹<span th:text="${wallet.balance}">0.00</span>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div>
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Transaction History</h2>
+            <div class="overflow-x-auto bg-white rounded-2xl shadow-sm border border-gray-200">
+                <table class="min-w-full text-sm text-gray-700">
+                    <thead class="bg-gray-50 text-xs uppercase text-gray-500">
+                    <tr>
+                        <th class="px-6 py-3 text-left">Transaction Date</th>
+                        <th class="px-6 py-3 text-left">Amount</th>
+                        <th class="px-6 py-3 text-left">Description</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="transaction : ${transactions}" class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4" th:text="${transaction.date}"></td>
+                        <td class="px-6 py-4 text-green-600 font-medium" th:text="${transaction.amount}"></td>
+                        <td class="px-6 py-4" th:text="${transaction.description}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
-</div>
+</main>
+
 
 </body>
 </html>
-

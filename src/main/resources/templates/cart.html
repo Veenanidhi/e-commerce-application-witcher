@@ -111,35 +111,39 @@
 
                 <!--User Icon-->
 
+                <!-- User Icon & Dropdown -->
                 <div class="relative inline-block text-left">
-                    <!-- User Icon -->
-                    <button id="user-menu-button" class="text-white hover:text-blue-500 focus:outline-none">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    <button id="user-menu-button" class="text-gray-700 hover:text-blue-600 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                     </button>
 
-                    <!-- Dropdown Menu -->
-                    <div id="dropdown-menu" class="dropdown-menu absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
-                        <div class="p-4">
-                            <!-- Profile Information -->
+                    <!-- Dropdown -->
+                    <div id="dropdown-menu"
+                         class="dropdown-menu absolute right-0 mt-3 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-50
+            origin-top-right transform scale-100 transition-all duration-200 ease-out
+            max-w-[calc(100vw-1rem)] overflow-hidden">
+
+                    <div class="p-4">
                             <div class="flex items-center mb-2">
-                                <svg class="w-12 h-12 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                <svg class="w-12 h-12 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                 </svg>
                                 <div>
-                                    <p class="text-gray-700 font-medium">User Name</p>
-                                    <p class="text-gray-500 text-sm">user@example.com</p>
+                                    <p class="text-gray-700 font-medium" th:text="${#authentication.name}">User Name</p>
+<!--                                    <p class="text-gray-500 text-sm">user@example.com</p>-->
                                 </div>
                             </div>
 
-                            <!-- Dropdown Items -->
-
                             <a th:href="@{/user/profile}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
-                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
-                            <form th:action="@{/logout}" method="POST" class="px-4 py-2">
-                                <input type="submit" value="Logout" class="w-full text-center py-2 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">
-                            </form>
+<!--                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>-->
+<!--                            <form th:action="@{/logout}" method="POST" class="px-4 py-2">-->
+<!--                                <input type="submit" value="Logout"-->
+<!--                                       class="w-full text-center py-2 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">-->
+<!--                            </form>-->
                         </div>
                     </div>
                 </div>
@@ -191,19 +195,6 @@
                                         </div>
 
                                         <div class="mt-3 d-flex justify-content-between align-items-center">
-<!--                                            <div class="quantity">-->
-<!--                                                &lt;!&ndash; Decrement quantity button &ndash;&gt;-->
-<!--                                                <button class="btn btn-decrement px-3 py-1 bg-gray-300 text-black rounded"-->
-<!--                                                        th:onclick="|window.location='@{/cart/decrement/{id}(id=${cartItem.cartItemId})}'|">-</button>-->
-<!--                                                &lt;!&ndash; Quantity display &ndash;&gt;-->
-<!--                                                <input type="text" class="w-12 text-center border border-gray-300 rounded"-->
-<!--                                                       th:value="${cartItem.quantity}" readonly>-->
-<!--                                                &lt;!&ndash; Increment quantity button &ndash;&gt;-->
-<!--                                                <button class="btn btn-increment px-3 py-1 bg-gray-300 text-black rounded"-->
-<!--                                                        th:if="${cartItem.quantity < 5}"-->
-<!--                                                        th:onclick="|window.location='@{/cart/increment/{id}(id=${cartItem.cartItemId})}'|">+</button>-->
-
-<!--                                            </div>-->
 
                                             <div class="quantity">
                                                 <!-- Decrement quantity button -->
@@ -226,9 +217,51 @@
 
 
                                             <!-- Calculate and display total price for this item dynamically (quantity * product price) -->
+<!--                                            <p class="mb-0">-->
+<!--&lt;!&ndash;                                                <strong>₹<span th:text="${cartItem.quantity * cartItem.product.price}">0.00</span>&ndash;&gt;-->
+<!--                                                <strong>-->
+<!--                                                    <span th:if="${cartItem.product.productOffers != null and !cartItem.product.productOffers.isEmpty()}"-->
+<!--                                                       class="line-through">-->
+<!--                ₹<span th:text="${cartItem.product.price}">0.00</span>-->
+<!--            </span>-->
+
+<!--                                                &lt;!&ndash; Show discounted price &ndash;&gt;-->
+<!--                                                ₹<span th:text="${cartItem.product.productOffers != null and !cartItem.product.productOffers.isEmpty()-->
+<!--                            ? cartItem.quantity * (cartItem.product.price - (cartItem.product.price * cartItem.product.productOffers.get(0).discountPercentage / 100))-->
+<!--                            : cartItem.quantity * cartItem.product.price}">0.00</span>-->
+<!--                                                </strong>-->
+<!--                                            </p>-->
+
                                             <p class="mb-0">
-                                                <strong>₹<span th:text="${cartItem.quantity * cartItem.product.price}">0.00</span></strong>
+                                                <strong>
+                                                    <!-- Show original price if there's any offer -->
+                                                    <span th:if="${cartItem.product.productOffers != null and !cartItem.product.productOffers.isEmpty() or cartItem.product.categoryOffer != null and cartItem.product.categoryOffer.valid and cartItem.product.categoryOffer.active}"
+                                                          class="line-through text-gray-500 mr-2">
+            ₹<span th:text="${cartItem.product.price}">0.00</span>
+        </span>
+
+                                                    <!-- Final discounted price -->
+                                                    ₹<span th:text="${#numbers.formatDecimal(
+            cartItem.product.productOffers != null and !cartItem.product.productOffers.isEmpty()
+                ? cartItem.quantity * (cartItem.product.price - (cartItem.product.price * cartItem.product.productOffers.get(0).discountPercentage / 100))
+                : cartItem.product.categoryOffer != null and cartItem.product.categoryOffer.valid and cartItem.product.categoryOffer.active
+                    ? cartItem.quantity * (cartItem.product.price - (cartItem.product.price * cartItem.product.categoryOffer.discountPercentage / 100))
+                    : cartItem.quantity * cartItem.product.price, 1, 2)}">0.00</span>
+                                                </strong>
                                             </p>
+
+                                            <div class="text-sm text-green-700 mt-1">
+    <span th:if="${cartItem.product.productOffers != null and !cartItem.product.productOffers.isEmpty()}">
+        Product Offer:
+        <span th:text="${cartItem.product.productOffers.get(0).productOfferName}">Offer Name</span>
+        (<span th:text="${cartItem.product.productOffers.get(0).discountPercentage}">0</span>% OFF)
+    </span><span th:if="${cartItem.product.categoryOffer != null and cartItem.product.categoryOffer.valid()}">
+        Category Offer:
+        <span th:text="${cartItem.product.categoryOffer.categoryOfferName}">Offer Name</span>
+        (<span th:text="${cartItem.product.categoryOffer.discountPercentage}">0</span>% OFF)
+    </span>
+                                            </div>
+
                                         </div>
 
                                         <div class="mt-2">
@@ -243,7 +276,7 @@
                             <hr class="mb-4">
 
                             <!-- Informational message -->
-                            <p class=" text-cyan-400 mb-0">
+                            <p class=" text-black mb-0">
                                 <i class="fas fa-info-circle mr-1"></i> Do not delay the purchase, adding items to your cart does not mean booking them.
                             </p>
                         </div>
@@ -255,49 +288,61 @@
 
                 <div th:unless="${cart.size()} == 0" class="col-lg-4">
 
-                    <!-- Card for total amount -->
-                    <div class="card mb-4">
+                    <div class="card mb-4 shadow rounded-4">
                         <div class="card-body">
 
-                            <h5 class="mb-3">The total amount</h5>
+                            <h5 class="mb-3 text-uppercase fw-bold">The Total Amount</h5>
 
                             <ul class="list-group list-group-flush">
+                                <!-- Amount Payable Row -->
                                 <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                                    Amount Payable
-                                    <!-- Display the total cart amount -->
-                                    <span>₹<span th:text="${total}"></span></span>
+                                    <span>Amount Payable</span>
+                                    <span>₹<span th:text="${total}">0.00</span></span>
                                 </li>
+
+                                <!-- Debug section -->
+<!--                                <div class="card mb-4">-->
+<!--                                    <div class="card-body">-->
+<!--                                        <h5>Debug Information</h5>-->
+<!--                                        <p>Total from controller: ₹<span th:text="${total}">0.00</span></p>-->
+<!--                                        <p>Calculated sum in template: ₹<span th:text="${#aggregates.sum(cart.![-->
+<!--            (product.productOffers != null and !product.productOffers.isEmpty())-->
+<!--            ? quantity * (product.price - (product.price * product.productOffers.get(0).discountPercentage / 100))-->
+<!--            : (product.categoryOffer != null and product.categoryOffer.valid and product.categoryOffer.active)-->
+<!--            ? quantity * (product.price - (product.price * product.categoryOffer.discountPercentage / 100))-->
+<!--            : quantity * product.price-->
+<!--        ])}">0.00</span></p>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+
+                                <!-- Shipping Info -->
                                 <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                    Shipping
-                                    <span> WITCHER</span>
+                                    <span>Shipping</span>
+                                    <span>WITCHER</span>
                                 </li>
+
+                                <!-- Total Amount with TAX -->
                                 <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
                                     <div>
                                         <strong>The total amount of</strong>
-                                        <strong>
-                                            <p class="mb-0">(including TAX)</p>
-                                        </strong>
+                                        <p class="mb-0">(including TAX)</p>
                                     </div>
-                                    <span><strong>₹<span th:text="${total}"></span></strong></span>
+                                    <span><strong>₹<span th:text="${total}">0.00</span></strong></span>
                                 </li>
                             </ul>
 
-                            <!-- Checkout button -->
-                            <a th:href="@{/user/cart/checkout}" class="btn btn-primary bg-black btn-block waves-effect waves-light">Go to checkout</a>
+                            <!-- Checkout Button -->
+                            <a th:href="@{/user/cart/checkout}"
+                               class="btn btn-primary bg-black text-uppercase fw-semibold btn-block waves-effect waves-light">
+                                Go to checkout
+                            </a>
 
                         </div>
                     </div>
                 </div>
 
-                <!-- End of checkout summary column -->
-
             </div>
-            <!-- End of Grid row -->
-
-
         </section>
-        <!-- End of Section: Block Content -->
-
     </div>
 </main>
 

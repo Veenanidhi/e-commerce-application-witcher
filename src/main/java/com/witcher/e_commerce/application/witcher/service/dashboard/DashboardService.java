@@ -1,5 +1,6 @@
 package com.witcher.e_commerce.application.witcher.service.dashboard;
 
+
 public interface DashboardService {
 
     Object getTotalUsers();
@@ -13,4 +14,7 @@ public interface DashboardService {
     Object getMostSoldItems();
 
     Object getMonthlyRevenue();
+
+
+    Object getTopSellingCategories();
 }

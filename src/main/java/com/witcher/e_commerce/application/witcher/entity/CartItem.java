@@ -21,7 +21,12 @@ public class CartItem {
     @JoinColumn(name ="product_id")
     private Product product;
 
+    @ManyToOne
+    @JoinColumn(name ="category_id")
+    private Category category;
+
     private Integer quantity;
+
     private double price;
 
 
@@ -55,4 +60,6 @@ public class CartItem {
     public void setPrice(double price) {
         this.price = price;
     }
+
+
 }

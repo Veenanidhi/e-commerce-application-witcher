@@ -28,7 +28,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,43 +64,68 @@ public class AdminController {
         this.couponService = couponService;
     }
 
+
     @GetMapping("/dashboard")
-    public String adminHome(Model model){
+    public String adminHome(
+            @RequestParam(value = "filter", defaultValue = "daily") String filter,
+            @RequestParam(value = "startDate", required = false) String startDate,
+            @RequestParam(value = "endDate", required = false) String endDate,
+            Model model) {
 
+        LocalDate today = LocalDate.now();
+        Date start = null;
+        Date end = null;
 
-        Object totalUsers = dashboardService.getTotalUsers();
-        Object todayRevenue = dashboardService.getTodayRevenue();
-        Object totalRevenue = dashboardService.getTotalRevenue();
-        List<Double> monthlyRevenue = (List<Double>) dashboardService.getMonthlyRevenue();
+        try {
+            if ("daily".equals(filter)) {
+                start = java.sql.Date.valueOf(today);
+                end = java.sql.Date.valueOf(today.plusDays(1));
+            } else if ("weekly".equals(filter)) {
+                start = java.sql.Date.valueOf(today.minusDays(7));
+                end = java.sql.Date.valueOf(today.plusDays(1));
+            } else if ("monthly".equals(filter)) {
+                start = java.sql.Date.valueOf(today.withDayOfMonth(1));
+                end = java.sql.Date.valueOf(today.plusMonths(1).withDayOfMonth(1));
+            } else if ("custom".equals(filter)) {
+                if (startDate != null && endDate != null) {
+                    start = java.sql.Date.valueOf(LocalDate.parse(startDate));
+                    end = java.sql.Date.valueOf(LocalDate.parse(endDate).plusDays(1)); // Include end date
+                } else {
+                    throw new IllegalArgumentException("Custom date range requires both startDate and endDate.");
+                }
+            }
 
-        Integer todaySales = orderRepository.findTodaySalesCount();
-        System.out.println("Today's Sales Count: " + todaySales);
+            Integer salesCount = orderRepository.findSalesWithinDateRange(start, end);
+            Double revenue = orderRepository.findRevenueWithinDateRange(start, end);
 
-
-        // Logging values for debugging
-        System.out.println("Total Users: " + totalUsers);
-        System.out.println("Today's Sales: " + todaySales);
-        System.out.println("Today's Revenue: ₹" + todayRevenue);
-        System.out.println("Total Revenue: ₹" + totalRevenue);
-
-        model.addAttribute("totalUsers", dashboardService.getTotalUsers());
-        model.addAttribute("todaySales", dashboardService.getTodaySalesCount());
-        model.addAttribute("todayRevenue", dashboardService.getTodayRevenue());
-        model.addAttribute("totalRevenue", dashboardService.getTotalRevenue());
-        model.addAttribute("mostSoldItems", dashboardService.getMostSoldItems());
-        model.addAttribute("monthlyRevenue", dashboardService.getMonthlyRevenue());
-        model.addAttribute("monthlyRevenue", monthlyRevenue);
-
+            model.addAttribute("filter", filter);
+            model.addAttribute("salesCount", salesCount);
+            model.addAttribute("revenue", revenue);
+            model.addAttribute("totalUsers", dashboardService.getTotalUsers());
+            model.addAttribute("todaySales", dashboardService.getTodaySalesCount());
+            model.addAttribute("todayRevenue", dashboardService.getTodayRevenue());
+            model.addAttribute("totalRevenue", dashboardService.getTotalRevenue());
+            model.addAttribute("mostSoldItems", dashboardService.getMostSoldItems());
+            model.addAttribute("monthlyRevenue", dashboardService.getMonthlyRevenue());
+            model.addAttribute("topCategories", dashboardService.getTopSellingCategories());
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Error fetching the data. Please verify the input.");
+            e.printStackTrace();
+        }
 
         return "admin-page";
     }
 
+
     // Category Section//
+
+
+
 
     @GetMapping("/categories")
     public String showCategory(Model model,
                                @RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "20") int size) {
+                               @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC,"id"));
         Page<Category> categoryPage = categoryService.findAllPaginated(pageable);
         System.out.println("pagination called");
@@ -143,8 +169,6 @@ public class AdminController {
 
     }
 
-
-
     // Product Section//
 
     @GetMapping("/products")
@@ -173,8 +197,6 @@ public class AdminController {
 
         return "products";
     }
-
-
 
 
     @GetMapping("/products/add")
@@ -240,17 +262,17 @@ public class AdminController {
         ProductDTO productDTO = new ProductDTO();
         productDTO.setId(product.getId());
         productDTO.setName(product.getName());
-        productDTO.setCategory(product.getCategory().getId());  // Set category ID
+        productDTO.setCategory(product.getCategory().getId());
         productDTO.setPrice(product.getPrice());
-        productDTO.setStock(product.getStock());  // Assuming Product has a getStock() method
+        productDTO.setStock(product.getStock());
         productDTO.setDescription(product.getDescription());
 
       //  productDTO.setStatus(product.getStatus());
         productDTO.setImageName(product.getImageName());
-        productDTO.setDeleted(product.isDeleted());  // Assuming Product has an isDeleted() method
+        productDTO.setDeleted(product.isDeleted());
 
         model.addAttribute("categories", categoryService.findAll());
-        model.addAttribute("productDTO", productDTO);  // Use "productDTO" as the attribute name
+        model.addAttribute("productDTO", productDTO);
 
         return "productUpdate";
     }
@@ -261,23 +283,23 @@ public class AdminController {
     public String orderManagement(Model model){
         List<Orders> orders = orderService.getAllOrders();
         model.addAttribute("orders", orders);
-        return "order"; // return your Thymeleaf template (orders.html)
+        return "order";
     }
 
     @PostMapping("/orders/updateStatus")
     public String updateOrderStatus(@RequestParam("orderId") Long orderId, @RequestParam("newStatus") String newStatus) {
-        orderService.updateOrderStatus(orderId, newStatus); // Update order status
-        return "redirect:/admin/orders"; // Redirect back to the orders page after update
+        orderService.updateOrderStatus(orderId, newStatus);
+        return "redirect:/admin/orders";
     }
 
     @GetMapping("/orders/details/{orderItemId}")
     public String getOrderDetails(@PathVariable Long orderItemId, Model model) {
-        Orders order = orderService.findById(orderItemId); // Ensure this fetches the correct order
+        Orders order = orderService.findById(orderItemId);
         if (order == null) {
-            return "404-page"; // Replace with your error page or redirect
+            return "404-page";
         }
-        model.addAttribute("order", order); // Use "order" as the attribute name
-        return "order-details"; // The name of your Thymeleaf template for order details
+        model.addAttribute("order", order);
+        return "order-details";
     }
 
     // Coupon Section//
@@ -306,8 +328,7 @@ public class AdminController {
             if (optionalCoupon.isPresent()) {
                 model.addAttribute("coupon", optionalCoupon.get());
             } else {
-                // Handle the case where the coupon does not exist, e.g., redirect or show an error
-                return "redirect:/admin/coupons"; // or handle as appropriate
+                return "redirect:/admin/coupons";
             }
             return "coupon-edit";
         }
@@ -323,6 +344,7 @@ public class AdminController {
             couponService.deleteCoupon(id);
             return "redirect:/admin/coupons";
         }
+
 
 
 

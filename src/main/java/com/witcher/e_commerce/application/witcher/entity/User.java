@@ -1,5 +1,6 @@
 package com.witcher.e_commerce.application.witcher.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.witcher.e_commerce.application.witcher.service.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -54,8 +55,15 @@ public class User{
             inverseJoinColumns = @JoinColumn(name = "coupon_id"))
     private Set<Coupon> coupons = new HashSet<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private Wallet wallet;
 
+    @Column(name = "referral_code", unique = true)
+    private String referralCode;
 
+    @Column(name = "referred_by")
+    private String referredBy; // Stores the referral code of the user who referred this user.
 
     @Column(nullable = false)
     private boolean isEnabled = false;
@@ -64,6 +72,9 @@ public class User{
         this.role = role;
         return role;
     }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Transaction> transactions;
+
 
     public List<Orders> getOrders() {
         return orders;
@@ -72,7 +83,7 @@ public class User{
     public User() {
     }
 
-    public User(Long id, String username, String email, String password, String phone_no, Role role, List<Address> addresses, List<Orders> orders, Set<Coupon> coupons, boolean isEnabled) {
+    public User(Long id, String username, String email, String password, String phone_no, Role role, List<Address> addresses, List<Orders> orders, Set<Coupon> coupons, Wallet wallet, String referralCode, String referredBy, boolean isEnabled, List<Transaction> transactions) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -82,7 +93,35 @@ public class User{
         this.addresses = addresses;
         this.orders = orders;
         this.coupons = coupons;
+        this.wallet = wallet;
+        this.referralCode = referralCode;
+        this.referredBy = referredBy;
         this.isEnabled = isEnabled;
+        this.transactions = transactions;
+    }
+
+    public String getReferralCode() {
+        return referralCode;
+    }
+
+    public void setReferralCode(String referralCode) {
+        this.referralCode = referralCode;
+    }
+
+    public String getReferredBy() {
+        return referredBy;
+    }
+
+    public void setReferredBy(String referredBy) {
+        this.referredBy = referredBy;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 
     public Long getId() {
@@ -156,6 +195,14 @@ public class User{
 
     public void setCoupons(Set<Coupon> coupons) {
         this.coupons = coupons;
+    }
+
+    public Wallet getWallet() {
+        return wallet;
+    }
+
+    public void setWallet(Wallet wallet) {
+        this.wallet = wallet;
     }
 }
 

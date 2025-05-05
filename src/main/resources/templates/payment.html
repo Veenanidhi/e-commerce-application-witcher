@@ -1,139 +1,264 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout</title>
+    <title>Checkout - Witcher</title>
+    <!-- ✅ Add this in payment.html -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
     <style>
-        #image{
-          width: 1550px;
-              height: 700px;
-              background: url([[@{/img/checkout.webp}]]);
-              background-size: cover;
-              background-repeat: no-repeat;
-
+        #checkout-banner {
+            background: url([[@{/img/checkout.webp}]]);
+            background-size: cover;
+            background-repeat: no-repeat;
+            height: 100vh;
         }
     </style>
 </head>
-
-
 <body>
-<div class="image" id="image">
-<div class="container mx-auto py-12">
-    <div class="max-w-lg mx-auto bg-red-200 shadow-lg rounded-lg p-6">
-        <h2 class="text-2xl font-bold mb-4">Choose Payment Method</h2>
+    <div id="checkout-banner" class="flex items-center justify-center">
 
-        <!-- Total Cart Summary -->
-        <div class="mb-6">
-            <div class="flex justify-between text-lg font-semibold mb-2">
+    <div class="bg-white bg-opacity-90 shadow-2xl rounded-xl p-8 max-w-lg w-full">
+        <h2 class="text-3xl font-bold text-center mb-6">Choose Payment Method</h2>
+
+        <div class="space-y-4 text-gray-800">
+            <div class="flex justify-between text-lg font-semibold">
                 <span>Cart Total:</span>
-                <span th:text="${paymentAmount}">₹ 0.00</span>
+                <span th:text="${'₹' + #numbers.formatDecimal(paymentAmount, 1, 2)}">₹0.00</span>
+            </div>
+            <div th:if="${totalDiscount > 0}" class="flex justify-between text-sm text-green-700">
+                <span>Discount:</span>
+                <span th:text="${'₹' + #numbers.formatDecimal(totalDiscount, 1, 2)}">₹0.00</span>
+            </div>
+            <div class="flex justify-between text-lg font-semibold border-t pt-2">
+                <span>Final Price:</span>
+                <span th:text="${'₹' + #numbers.formatDecimal(paymentAmount, 1, 2)}">₹0.00</span>
             </div>
         </div>
 
-<!--         Payment Options -->
+        <!-- Payment Options -->
+        <div class="mt-6">
+            <label class="block text-md font-medium mb-2">Payment Options:</label>
 
-        <div class="mb-4">
-            <label class="text-lg font-semibold block mb-2">Payment Options:</label>
+            <!-- COD -->
+            <!--            <div class="flex items-center mb-3">-->
+            <!--                <input id="cod" type="radio" name="paymentMethod" class="h-5 w-5 text-indigo-600" checked>-->
+            <!--                <label for="cod" class="ml-3">Cash on Delivery</label>-->
+            <!--            </div>-->
 
-            <!-- Cash on Delivery Option -->
-            <div class="flex items-center mb-4">
-                <input id="cod" type="radio" name="paymentMethod" class="h-5 w-5 text-indigo-600" checked>
-                <label th:href="@{/placeOrder}" method="post" for="cod" class="ml-2 text-gray-700">Cash on Delivery</label>
+            <div class="flex items-center mb-3" th:if="${codAvailable}">
+                <input id="cod" type="radio" name="paymentMethod" value="COD" class="h-5 w-5 text-indigo-600" checked>
+                <label th:href="@{/placeOrder}" for="cod" class="ml-3">Cash on Delivery</label>
             </div>
 
-            <!-- Razorpay Option -->
+            <!-- Razorpay -->
             <div class="flex items-center">
-                <input id="razorpay" type="radio" name="paymentMethod" value="Razorpay" class="h-5 w-5 text-indigo-600">
-                <label for="razorpay" class="ml-2 text-gray-700">Pay with Razorpay</label>
+                <input id="razorpay" type="radio" name="paymentMethod" value="RAZORPAY" class="h-5 w-5 text-indigo-600">
+                <label  for="razorpay" class="ml-3">Pay with Razorpay</label>
             </div>
 
-
+            <div th:unless="${codAvailable}" class="mt-2 text-sm text-red-600">
+                COD is not available for orders above ₹1000. Please choose an online payment method.
+            </div>
         </div>
 
-        <!-- Button -->
-        <button id="codBtn" class="w-full bg-pink-800 text-white py-2 px-4 rounded-lg hover:bg-pink-600">
-            Confirm COD Order
-        </button>
+        <!-- Buttons -->
+        <div class="mt-8 space-y-4">
+            <button id="codBtn" class="w-full bg-pink-700 hover:bg-pink-600 text-white py-2 rounded-lg font-medium">
+                Confirm COD Order
+            </button>
 
 
-        <!-- Razorpay button -->
-        <button id="razorpayBtn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-blue-600 mt-4 hidden">
-            Pay with Razorpay
-        </button>
+            <button id="razorpayBtn" class="w-full bg-blue-700 hover:bg-blue-600 text-white py-2 rounded-lg font-medium hidden">
+                Pay with Razorpay
+            </button>
+        </div>
+    </div>
 </div>
 
 
 
-    <script>
-    // Toggle between COD and Razorpay buttons
-    const codRadio = document.getElementById('cod');
-    const razorpayRadio = document.getElementById('razorpay');
-    const codBtn = document.getElementById('codBtn');
-    const razorpayBtn = document.getElementById('razorpayBtn');
 
-
-    codRadio.addEventListener('change', function () {
-        if (this.checked) {
-            codBtn.classList.remove('hidden');
-            razorpayBtn.classList.add('hidden');
-            walletBtn.classList.add('hidden');
-        }
-    });
-
-    razorpayRadio.addEventListener('change', function () {
-        if (this.checked) {
-            razorpayBtn.classList.remove('hidden');
-            codBtn.classList.add('hidden');
-            walletBtn.classList.add('hidden');
-        }
-    });
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            const codRadio = document.getElementById('cod');
+            const razorpayRadio = document.getElementById('razorpay');
+            const codBtn = document.getElementById('codBtn');
+            const razorpayBtn = document.getElementById('razorpayBtn');
 
 
 
-   // COD button logic
-      codBtn.addEventListener('click', function () {
-    // Add your alert if you still want to show it
-    //alert("Order placed with Cash on Delivery!");
 
-    // Redirect to the order confirmation page
-    window.location.href = "/order-confirmation"; // Adjust the URL if needed
-});
-
-
-    // Razorpay button logic
-    razorpayBtn.addEventListener('click', function () {
-        var options = {
-            "key": "rzp_test_GCgY3o3OlXx0HN", // Replace with your Razorpay key
-            "amount": [[${paymentAmount * 100}]], // Cart total in paisa (e.g., ₹3000 = 300000 paisa)
-            "currency": "INR",
-            "name": "WITCHER",
-            "description": "Shop With Today's Trend",
-            "image": "[[${'/img/logo.png'}]]",
-            "handler": function (response) {
-                 alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
-
-                // Handle payment success logic here
-            },
-            "prefill": {
-                "name": "[[${user.username}]]",
-                "email":"[[${user.email}]]",
-                "contact": "[[${user.phone_no}]]"
-            },
-            "theme": {
-                "color": "#3399cc"
+            // Default logic on load
+            function toggleButtons() {
+                if (razorpayRadio && razorpayRadio.checked) {
+                    razorpayBtn.classList.remove('hidden');
+                    codBtn.classList.add('hidden');
+                } else if (codRadio && codRadio.checked) {
+                    codBtn.classList.remove('hidden');
+                    razorpayBtn.classList.add('hidden');
+                }
             }
-        };
 
-        var rzp1 = new Razorpay(options);
-        rzp1.open();
+            // Add listeners only if the element exists (cod might be missing when not available)
+            if (codRadio) {
+                codRadio.addEventListener('change', toggleButtons);
+            }
+            if (razorpayRadio) {
+                razorpayRadio.addEventListener('change', toggleButtons);
+            }
+
+            // Set default button visibility on page load
+            toggleButtons();
+
+            // COD button click (if available)
+            if (codBtn) {
+                codBtn.addEventListener('click', () => {
+                    window.location.href = "/order-confirmation";
+                });
+            }
+
+           //razorpay payment
+
+            if (razorpayBtn) {
+    const paymentAmount = [[${paymentAmount}]];
+    const orderId = [[${orderId != null ? orderId : 'null'}]];
+    const userName = '[[${user.username}]]';
+    const userEmail = '[[${user.email}]]';
+    const userPhone = '[[${user.phone_no}]]';
+
+    razorpayBtn.addEventListener('click', function () {
+        try {
+            console.log("Payment initiated with amount:", paymentAmount, "orderId:", orderId);
+
+            // Get CSRF token from meta tags
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+            console.log("CSRF setup with header:", csrfHeader);
+
+            // Prepare payload, avoid sending "null" string
+            const payload = {
+                amount: paymentAmount
+            };
+            if (orderId !== null && orderId !== 'null') {
+                payload.orderId = orderId;
+            }
+
+            // Step 1: Create Razorpay order
+            $.ajax({
+                url: '/user/cart/create-razorpay-order',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                headers: {
+                    [csrfHeader]: csrfToken
+                },
+                success: function (data) {
+                    console.log("Razorpay order created:", data);
+
+                    const options = {
+                        key: 'rzp_test_GCgY3o3OlXx0HN',
+                        amount: data.amount * 100, // amount in paise
+                        currency: "INR",
+                        name: "WITCHER",
+                        image: "/img/logo.png",
+                        description: "Shop With Today's Trend",
+                        order_id: data.orderId,
+                        handler: function (response) {
+                            console.log("Payment success:", response);
+
+                            // Use your system's order ID, not Razorpay's
+                            const appOrderId = (orderId !== null && orderId !== 'null') ? orderId : data.applicationOrderId;
+
+                            // Still send success details to backend but don't validate signature
+                            $.ajax({
+                                url: '/user/cart/payment/success',
+                                type: 'POST',
+                                headers: {
+                                    [csrfHeader]: csrfToken,
+                                    'Content-Type': 'application/json'
+                                },
+                                data: JSON.stringify({
+                                    orderId: appOrderId,
+                                    razorpayPaymentId: response.razorpay_payment_id,
+                                    razorpayOrderId: response.razorpay_order_id,
+                                    razorpaySignature: response.razorpay_signature
+                                }),
+                                success: function (res) {
+                                    console.log("Backend updated with payment info:", res);
+                                    window.location.href = '/order-confirmation';
+                                },
+                                error: function (err) {
+                                    console.error("Database update failed:", err);
+                                    // Still redirect to success page even if update fails
+                                    window.location.href = '/order-confirmation';
+                                }
+                            });
+                        },
+                        prefill: {
+                            name: userName,
+                            email: userEmail,
+                            contact: userPhone
+                        },
+                        theme: {
+                            color: "#5a189a"
+                        }
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+
+                    rzp.on('payment.failed', function (response) {
+                        console.log("Payment failed:", response);
+
+                        // Still notify backend of failure but don't expect verification
+                        $.ajax({
+                            url: '/user/cart/payment/failure',
+                            type: 'POST',
+                            headers: {
+                                [csrfHeader]: csrfToken,
+                                'Content-Type': 'application/json'
+                            },
+                            data: JSON.stringify({
+                                orderId: (orderId !== null && orderId !== 'null') ? orderId : data.applicationOrderId,
+                                razorpayPaymentId: response.error.metadata ? response.error.metadata.payment_id : null,
+                                razorpayOrderId: response.error.metadata ? response.error.metadata.order_id : data.orderId
+                            }),
+                            success: function (res) {
+                                console.log("Backend updated with failure info:", res);
+                                location.href = '/user/profile/order-history';
+                            },
+                            error: function (err) {
+                                console.error("Database update failed:", err);
+                                // Still redirect even if update fails
+                                location.href = '/user/profile/order-history';
+                            }
+                        });
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error("Failed to create Razorpay order:", error);
+                    console.error("Response:", xhr.responseText);
+                    alert("Unable to initiate payment. Please try again later.");
+                }
+            });
+        } catch (e) {
+            console.error("Payment initialization error:", e);
+            alert("Error initiating payment. Please try again.");
+        }
     });
-</script>
-</div>
+}
+
+        });
+    </script>
+
 
 </body>
 </html>
@@ -141,3 +266,112 @@
 
 
 
+
+<!--<script>-->
+<!--    document.addEventListener('DOMContentLoaded', function () {-->
+<!--      const codRadio = document.getElementById('cod');-->
+<!--      const razorpayRadio = document.getElementById('razorpay');-->
+<!--      const codBtn = document.getElementById('codBtn');-->
+<!--      const razorpayBtn = document.getElementById('razorpayBtn');-->
+
+<!--      // Default logic on load-->
+<!--      function toggleButtons() {-->
+<!--          if (razorpayRadio && razorpayRadio.checked) {-->
+<!--              razorpayBtn.classList.remove('hidden');-->
+<!--              codBtn.classList.add('hidden');-->
+<!--          } else if (codRadio && codRadio.checked) {-->
+<!--              codBtn.classList.remove('hidden');-->
+<!--              razorpayBtn.classList.add('hidden');-->
+<!--          }-->
+<!--      }-->
+
+<!--      // Add listeners only if the element exists (cod might be missing when not available)-->
+<!--      if (codRadio) {-->
+<!--          codRadio.addEventListener('change', toggleButtons);-->
+<!--      }-->
+<!--      if (razorpayRadio) {-->
+<!--          razorpayRadio.addEventListener('change', toggleButtons);-->
+<!--      }-->
+
+<!--      // Set default button visibility on page load-->
+<!--      toggleButtons();-->
+
+<!--      // COD button click (if available)-->
+<!--      if (codBtn) {-->
+<!--          codBtn.addEventListener('click', () => {-->
+<!--              window.location.href = "/order-confirmation";-->
+<!--          });-->
+<!--      }-->
+
+<!--       // Razorpay button handler-->
+<!--       if (razorpayBtn) {-->
+<!--           razorpayBtn.addEventListener('click', function () {-->
+<!--               const options = {-->
+<!--                   "key": "rzp_test_GCgY3o3OlXx0HN",-->
+<!--                   "amount": /*[[${paymentAmount * 100}]]*/, // amount in paise-->
+<!--                   "currency": "INR",-->
+<!--                   "name": "WITCHER",-->
+<!--                   "description": "Shop With Today's Trend",-->
+<!--                   "image": "[[${'/img/logo.png'}]]",-->
+<!--                   "order_id": "[[${razorpayOrderId}]]",-->
+<!--                   "handler": function (response) {-->
+<!--                       alert("Payment successful! Payment ID: " + response.razorpay_payment_id);-->
+<!--                       fetch('/payment/success', {-->
+<!--                           method: 'POST',-->
+<!--                           headers: {-->
+<!--                               'Content-Type': 'application/json'-->
+<!--                           },-->
+<!--                           body: JSON.stringify({-->
+<!--                               orderId: "[[${orderId}]]",-->
+<!--                               razorpayPaymentId: response.razorpay_payment_id-->
+<!--                           })-->
+<!--                       }).then(() => {-->
+<!--                           window.location.href = "/order-confirmation";-->
+<!--                       });-->
+<!--                   },-->
+<!--                   "prefill": {-->
+<!--                       "name": "[[${user.username}]]",-->
+<!--                       "email": "[[${user.email}]]",-->
+<!--                       "contact": "[[${user.phone_no}]]"-->
+<!--                   },-->
+<!--                   "modal": {-->
+<!--                       "ondismiss": function () {-->
+<!--                           fetch('/payment-failed', {-->
+<!--                               method: 'POST',-->
+<!--                               headers: {-->
+<!--                                   'Content-Type': 'application/json'-->
+<!--                               },-->
+<!--                               body: JSON.stringify({-->
+<!--                                   orderId: "[[${orderId}]]"-->
+<!--                               })-->
+<!--                           }).then(() => {-->
+<!--                               window.location.href = "/user/profile/order-history";-->
+<!--                           });-->
+<!--                       }-->
+<!--                   },-->
+<!--                   "theme": {-->
+<!--                       "color": "#4F46E5"-->
+<!--                   }-->
+<!--               };-->
+
+<!--               const rzp1 = new Razorpay(options);-->
+<!--               rzp1.on('payment.failed', function (response) {-->
+<!--                   alert("Payment failed! Reason: " + response.error.description);-->
+<!--                   fetch('/payment-failed', {-->
+<!--                       method: 'POST',-->
+<!--                       headers: {-->
+<!--                           'Content-Type': 'application/json'-->
+<!--                       },-->
+<!--                       body: JSON.stringify({-->
+<!--                           orderId: "[[${orderId}]]"-->
+<!--                       })-->
+<!--                   }).then(() => {-->
+<!--                       window.location.href = "/user/profile/order-history";-->
+<!--                   });-->
+<!--               });-->
+
+<!--               rzp1.open();-->
+<!--           });-->
+<!--       }-->
+<!--   });-->
+<!--</script>-->

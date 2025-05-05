@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Table(name ="verification_token")
@@ -18,6 +19,7 @@ public class VerificationToken {
 
     private String token;
 
+    private String email;
 
     @Column(name = "expiry_date")
     private LocalDateTime expiryDate;
@@ -37,6 +39,14 @@ public class VerificationToken {
         this.expiryDate = LocalDateTime.now().plusDays(1);  // Set expiry to 1 day from now
     }
 
+    public VerificationToken(String token, Optional<User> user) {
+    }
+
+
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(expiryDate);
+    }
+
     public LocalDateTime getExpiryDate() {
         return expiryDate;
     }
@@ -45,6 +55,11 @@ public class VerificationToken {
         this.expiryDate = expiryDate;
     }
 
+    public String getEmail() {
+        return email;
+    }
 
-
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

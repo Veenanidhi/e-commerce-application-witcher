@@ -1,6 +1,5 @@
 package com.witcher.e_commerce.application.witcher.service;
 
-import com.witcher.e_commerce.application.witcher.dao.UserRepository;
 import com.witcher.e_commerce.application.witcher.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

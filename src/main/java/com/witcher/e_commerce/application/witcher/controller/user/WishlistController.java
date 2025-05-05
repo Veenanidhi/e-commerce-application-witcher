@@ -60,17 +60,4 @@ public class WishlistController {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

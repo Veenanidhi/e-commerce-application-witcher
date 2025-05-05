@@ -6,7 +6,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center" >
 
 <div class="w-full max-w-lg bg-white p-8 rounded-lg shadow-md">
     <h1 class="text-2xl font-bold mb-6 text-center">Add Product Offer</h1>
@@ -19,43 +19,51 @@
         <p th:text="${offerError}"></p>
     </div>
 
-    <form th:action="@{/admin/offers/addProductOffer}" th:object="${productOffer}" method="post" class="space-y-4">
+    <!-- Form to Add Product Offer -->
+    <form th:action="@{/admin/offers/addProductOffer}" th:object="${productOffer}" method="post" class="space-y-6">
+        <!-- Offer Name -->
         <div>
-            <label for="offerName" class="block text-gray-700">Offer Name</label>
+            <label for="offerName" class="block text-gray-700 font-medium">Offer Name</label>
             <input type="text" id="offerName" th:field="*{productOfferName}"
                    class="w-full border-gray-300 rounded-lg p-2 mt-1 focus:border-blue-500 focus:ring-blue-500"
                    placeholder="Enter offer name" required>
         </div>
 
+        <!-- Discount Percentage -->
         <div>
-            <label for="discount" class="block text-gray-700">Discount (%)</label>
+            <label for="discount" class="block text-gray-700 font-medium">Discount (%)</label>
             <input type="number" id="discount" th:field="*{discountPercentage}"
                    class="w-full border-gray-300 rounded-lg p-2 mt-1 focus:border-blue-500 focus:ring-blue-500"
-                   placeholder="Enter discount percentage" required>
+                   placeholder="Enter discount percentage" required min="0" max="100">
         </div>
 
+        <!-- Product Selection -->
         <div>
-            <label for="product" class="block text-gray-700">Select Product</label>
-            <select id="product" th:field="*{productList}" class="w-full border-gray-300 rounded-lg p-2 mt-1 focus:border-blue-500 focus:ring-blue-500">
-                <option th:each="product : ${products}"
-                        th:value="${product.id}"
-                        th:text="${product.name}"> <!-- Assuming Product has 'id' and 'name' -->
+            <label for="product" class="block text-gray-700 font-medium">Select Product</label>
+            <select id="product" th:field="*{productId}" class="w-full border-gray-300 rounded-lg p-2 mt-1 focus:border-blue-500 focus:ring-blue-500" required>
+                <option value="" disabled selected>Select a product</option>
+                <option th:each="product : ${products}" th:value="${product.id}" th:text="${product.name}">
                 </option>
             </select>
         </div>
 
+        <!-- Start Date -->
         <div class="mb-4">
             <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
-            <input type="date" id="startDate" name="startDate" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <input type="date" id="startDate" name="startDate" required
+                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
             <p class="mt-1 text-xs text-gray-500">Format: yyyy-MM-dd</p>
         </div>
 
+        <!-- Expiry Date -->
         <div class="mb-4">
             <label for="expiryDate" class="block text-sm font-medium text-gray-700">Expiry Date</label>
-            <input type="date" id="expiryDate" name="expiryDate" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <input type="date" id="expiryDate" name="expiryDate" required
+                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
             <p class="mt-1 text-xs text-gray-500">Format: yyyy-MM-dd</p>
         </div>
 
+        <!-- Buttons -->
         <div class="flex justify-between items-center">
             <a th:href="@{/admin/offers/listProductOffers}" class="text-gray-600 hover:text-gray-800">Back to Offers List</a>
             <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
@@ -64,7 +72,8 @@
         </div>
     </form>
 
-
 </div>
+
 </body>
+
 </html>

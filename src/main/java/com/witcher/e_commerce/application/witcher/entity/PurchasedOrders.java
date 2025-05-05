@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class PurchasedOrders {
@@ -53,18 +54,7 @@ public class PurchasedOrders {
         this.coupon = coupon;
     }
 
-    public PurchasedOrders(Long orderId, Address address, List<Orders> orderItems, User user, LocalDateTime orderDate, Double orderAmount, String paymentStatus, boolean refund_used, Coupon coupon) {
-        this.orderId = orderId;
-        this.address = address;
-        this.orderItems = orderItems;
-        this.user = user;
 
-        this.orderDate = orderDate;
-        this.orderAmount = orderAmount;
-        this.paymentStatus = paymentStatus;
-        this.refund_used = refund_used;
-        this.coupon = coupon;
-    }
 
     public Long getOrderId() {
         return orderId;

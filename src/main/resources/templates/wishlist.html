@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Wishlist</title>
+    <title>Wishlist - Witcher</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" data-th-href="@{'/css/style.css'}">
@@ -139,7 +139,7 @@
                                 </svg>
                                 <div>
                                     <p class="text-gray-700 font-medium" th:text="${#authentication.name}">User Name</p>
-                                    <p class="text-gray-500 text-sm">user@example.com</p>
+<!--                                    <p class="text-gray-500 text-sm">user@example.com</p>-->
                                 </div>
                             </div>
 
@@ -176,170 +176,56 @@
     </div>
 </nav>
 
-<!--<div class="container mx-auto p-6 bg-gray-50">-->
-<!--    <h1 class="text-3xl font-bold text-center mb-6">Your Wishlist</h1>-->
-
-<!--    &lt;!&ndash; Sidebar &ndash;&gt;-->
-<!--    <aside class="w-64 h-screen bg-white shadow-md ">-->
-<!--        <div class="p-6">-->
-<!--            <ul class="mt-2 space-y-4">-->
-<!--                <li>-->
-<!--                    <a th:href="@{/user/profile}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">-->
-<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">-->
-<!--                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm12 0H5v10h10V4z" clip-rule="evenodd"/>-->
-<!--                        </svg>-->
-<!--                        <span>Dashboard</span>-->
-<!--                    </a>-->
-<!--                </li>-->
-
-<!--                <li>-->
-<!--                    <a th:href="@{/user/profile/order-history}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">-->
-<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">-->
-<!--                            <path d="M10 2a1 1 0 00-1 1v2H6a1 1 0 00-1 1v1h10V6a1 1 0 00-1-1h-3V3a1 1 0 00-1-1z" />-->
-<!--                            <path fill-rule="evenodd" d="M4 9a1 1 0 00-1 1v6a1 1 0 001 1h12a1 1 0 001-1v-6a1 1 0 00-1-1H4z" clip-rule="evenodd" />-->
-<!--                        </svg>-->
-<!--                        <span>Order History</span>-->
-<!--                    </a>-->
-<!--                </li>-->
-<!--                <li>-->
-<!--                    <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">-->
-<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">-->
-<!--                            <path d="M8 9a1 1 0 00-1 1v6a1 1 0 001 1h4a1 1 0 001-1v-6a1 1 0 00-1-1H8z" />-->
-<!--                            <path fill-rule="evenodd" d="M5 7h10V6a2 2 0 00-2-2H7a2 2 0 00-2 2v1z" clip-rule="evenodd" />-->
-<!--                        </svg>-->
-<!--                        <span>Track Order</span>-->
-<!--                    </a>-->
-<!--                </li>-->
-<!--                <li>-->
-<!--                    <a th:href="@{/user/cart/}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">-->
-<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">-->
-<!--                            <path d="M16 5V3a1 1 0 00-1-1H5a1 1 0 00-1 1v2H2v11h16V5h-2zm-2 0H6V4h8v1z" />-->
-<!--                        </svg>-->
-<!--                        <span>Shopping Cart</span>-->
-<!--                    </a>-->
-<!--                </li>-->
-<!--                <li>-->
-<!--                    <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">-->
-<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">-->
-<!--                            <path fill-rule="evenodd" d="M6 3a1 1 0 011-1h6a1 1 0 011 1v1H6V3zm1 3V5h6v1H7z" clip-rule="evenodd" />-->
-<!--                        </svg>-->
-<!--                        <span>Wishlist</span>-->
-<!--                    </a>-->
-<!--                </li>-->
-<!--                <li>-->
-<!--                    <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">-->
-<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">-->
-<!--                            <path d="M12 7v6a2 2 0 11-4 0V7a2 2 0 114 0z" />-->
-<!--                        </svg>-->
-<!--                        <span>Wallet</span>-->
-<!--                    </a>-->
-<!--                </li>-->
-<!--                <li>-->
-<!--                    <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">-->
-<!--                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">-->
-<!--                            <path fill-rule="evenodd" d="M4.293 9.293a1 1 0 011.414 0L10 13.586l4.293-4.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414z" clip-rule="evenodd" />-->
-<!--                        </svg>-->
-<!--                        <span>Log-out</span>-->
-<!--                    </a>-->
-<!--                </li>-->
-<!--            </ul>-->
-<!--        </div>-->
-<!--    </aside>-->
-
-<!--    <div class="bg-white shadow-lg rounded-lg p-4 overflow-hidden">-->
-<!--        <table class="w-full text-left">-->
-<!--            <thead>-->
-<!--            <tr class="border-b-2 border-gray-200">-->
-<!--                <th class="py-2 px-4">Products</th>-->
-<!--                <th class="py-2 px-4">Price</th>-->
-<!--                <th class="py-2 px-4">Action</th>-->
-<!--            </tr>-->
-<!--            </thead>-->
-<!--            <tbody>-->
-<!--            <tr th:each="wishlistItem : ${wishlistItems}" class="hover:bg-gray-100 transition-colors">-->
-<!--                <td class="flex items-center py-4 px-4">-->
-<!--                    &lt;!&ndash; Product Image &ndash;&gt;-->
-<!--                    <img th:src="@{'/productImage/' + ${wishlistItem.imageName}}" alt="Product Image" class="w-16 h-16 object-cover rounded-md mr-4">-->
-<!--                    <span class="font-semibold text-gray-800" th:text="${wishlistItem.name}">Product Name</span>-->
-<!--                </td>-->
-<!--                <td class="py-4 px-4">-->
-<!--                    &lt;!&ndash; Price (Original price with discount) &ndash;&gt;-->
-<!--&lt;!&ndash;                    <span class="line-through text-gray-500" th:text="'₹' + ${wishlistItem.originalPrice}">₹Original Price</span>&ndash;&gt;-->
-<!--                    <span class="font-semibold text-green-600 ml-2" th:text="'₹' + ${wishlistItem.price}">₹Discounted Price</span>-->
-<!--                </td>-->
-<!--                <td class="py-4 px-4">-->
-<!--                    &lt;!&ndash; Add to Cart Button &ndash;&gt;-->
-<!--                    <a th:href="@{/user/cart/addToCart/{id}(id=${wishlistItem.id})}"-->
-<!--                       class="bg-black text-white rounded-lg px-4 py-2 hover:bg-gray-800 transition duration-200">-->
-<!--                        Add to Cart-->
-<!--                    </a>-->
-<!--                </td>-->
-<!--            </tr>-->
-<!--            </tbody>-->
-<!--        </table>-->
-<!--    </div>-->
-<!--</div>-->
-
-
 
 <div class="container mx-auto p-6 bg-gray-50 flex">
     <!-- Sidebar -->
-    <aside class="w-64 h-screen bg-white shadow-lg rounded-lg p-6">
-        <h2 class="text-lg font-bold text-center mb-6">Menu</h2>
-        <ul class="mt-2 space-y-4">
+    <aside class="w-64 h-screen bg-white shadow-lg rounded-2xl p-6 sticky top-0">
+        <h2 class="text-2xl font-bold text-gray-800 mb-8">My Account</h2>
+        <ul class="space-y-4">
             <li>
-                <a th:href="@{/user/profile}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg transition duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm12 0H5v10h10V4z" clip-rule="evenodd"/>
+                <a th:href="@{/user/profile}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm12 0H5v10h10V4z" clip-rule="evenodd" />
                     </svg>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li>
-                <a th:href="@{/user/profile/order-history}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg transition duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <a th:href="@{/user/profile/order-history}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 2a1 1 0 00-1 1v2H6a1 1 0 00-1 1v1h10V6a1 1 0 00-1-1h-3V3a1 1 0 00-1-1z" />
                         <path fill-rule="evenodd" d="M4 9a1 1 0 00-1 1v6a1 1 0 001 1h12a1 1 0 001-1v-6a1 1 0 00-1-1H4z" clip-rule="evenodd" />
                     </svg>
                     <span>Order History</span>
                 </a>
             </li>
-<!--            <li>-->
-<!--                <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg transition duration-200">-->
-<!--                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">-->
-<!--                        <path d="M8 9a1 1 0 00-1 1v6a1 1 0 001 1h4a1 1 0 001-1v-6a1 1 0 00-1-1H8z" />-->
-<!--                        <path fill-rule="evenodd" d="M5 7h10V6a2 2 0 00-2-2H7a2 2 0 00-2 2v1z" clip-rule="evenodd" />-->
-<!--                    </svg>-->
-<!--                    <span>Track Order</span>-->
-<!--                </a>-->
-<!--            </li>-->
             <li>
-                <a th:href="@{/user/cart/}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg transition duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <a th:href="@{/user/cart/}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M16 5V3a1 1 0 00-1-1H5a1 1 0 00-1 1v2H2v11h16V5h-2zm-2 0H6V4h8v1z" />
                     </svg>
                     <span>Shopping Cart</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg transition duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <a th:href="@{/user/wishlist/}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M6 3a1 1 0 011-1h6a1 1 0 011 1v1H6V3zm1 3V5h6v1H7z" clip-rule="evenodd" />
                     </svg>
                     <span>Wishlist</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg transition duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <a th:href="@{/user/profile/wallet}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M12 7v6a2 2 0 11-4 0V7a2 2 0 114 0z" />
                     </svg>
                     <span>Wallet</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg transition duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <a href="#" class="flex items-center gap-3 text-red-600 hover:bg-red-50 p-3 rounded-xl transition">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4.293 9.293a1 1 0 011.414 0L10 13.586l4.293-4.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
                     <span>Log-out</span>
@@ -349,38 +235,6 @@
     </aside>
 
     <!-- Main Content -->
-<!--    <div class="flex-1 bg-white shadow-lg rounded-lg p-6 ml-6">-->
-<!--        <h1 class="text-3xl font-bold text-center mb-6">Your Wishlist</h1>-->
-<!--        <table class="w-full text-left">-->
-<!--            <thead>-->
-<!--            <tr class="border-b-2 border-gray-200">-->
-<!--                <th class="py-2 px-4">Products</th>-->
-<!--                <th class="py-2 px-4">Price</th>-->
-<!--                <th class="py-2 px-4">Action</th>-->
-<!--            </tr>-->
-<!--            </thead>-->
-<!--            <tbody>-->
-<!--            <tr th:each="wishlistItem : ${wishlistItems}" class="hover:bg-gray-100 transition-colors">-->
-<!--                <td class="flex items-center py-4 px-4">-->
-<!--                    &lt;!&ndash; Product Image &ndash;&gt;-->
-<!--                    <img th:src="@{'/productImage/' + ${wishlistItem.imageName}}" alt="Product Image" class="w-16 h-16 object-cover rounded-md mr-4">-->
-<!--                    <span class="font-semibold text-gray-800" th:text="${wishlistItem.name}">Product Name</span>-->
-<!--                </td>-->
-<!--                <td class="py-4 px-4">-->
-<!--                    <span class="font-semibold text-green-600" th:text="'₹' + ${wishlistItem.price}">₹Discounted Price</span>-->
-<!--                </td>-->
-<!--                <td class="py-4 px-4">-->
-<!--                    &lt;!&ndash; Add to Cart Button &ndash;&gt;-->
-<!--                    <a th:href="@{/user/cart/addToCart/{id}(id=${wishlistItem.id})}"-->
-<!--                       class="bg-black text-white rounded-lg px-4 py-2 hover:bg-gray-800 transition duration-200">-->
-<!--                        Add to Cart-->
-<!--                    </a>-->
-<!--                </td>-->
-<!--            </tr>-->
-<!--            </tbody>-->
-<!--        </table>-->
-<!--    </div>-->
-
     <div class="flex-1 bg-white shadow-lg rounded-lg p-6 ml-6">
         <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Your Wishlist</h1>
         <table class="w-full text-left">
@@ -507,15 +361,3 @@
 </body>
 </html>
 
-<!--<div class="container mx-auto p-4">-->
-<!--    <h1 class="text-2xl font-bold mb-4">Your Wishlist</h1>-->
-<!--    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">-->
-<!--        <div th:each="wishlistItem : ${wishlistItems}" class="border rounded p-4">-->
-<!--            <img th:src="@{${wishlistItem.imageName}}" alt="Product Image" class="mb-2 w-full h-48 object-cover">-->
-<!--            <h2 class="font-semibold text-lg" th:text="${wishlistItem.name}">Product Name</h2>-->
-<!--            <p th:text="${wishlistItem.description}">Product Description</p>-->
-<!--            <p class="text-green-500" th:text="${wishlistItem.price}">Price</p>-->
-<!--            <button class="bg-blue-500 text-white rounded px-4 py-2 mt-2">Add to Cart</button>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->

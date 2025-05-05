@@ -54,7 +54,7 @@ public class OTPService {
             otpRepository.save(newOtpEntity);
         }
 
-        return otp; // Return the generated OTP
+        return otp;
     }
 
 
@@ -63,7 +63,7 @@ public class OTPService {
         SecureRandom random = new SecureRandom();
         StringBuilder otp = new StringBuilder(OTP_LENGTH);
         for (int i = 0; i < OTP_LENGTH; i++) {
-            otp.append(random.nextInt(10));   // appends digits 0-9
+            otp.append(random.nextInt(10));
         }
 
         return otp.toString();
@@ -76,20 +76,20 @@ public class OTPService {
             OtpEntity otpEntity = otpEntityOptional.get();
 
             if (isOtpExpired(otpEntity)) {
-                otpRepository.delete(otpEntity); // Remove expired OTP
+                otpRepository.delete(otpEntity);
                 return false;
             }
 
             boolean isValid = otpEntity.getOtp().equals(otp);
             if (isValid) {
-                otpRepository.delete(otpEntity); // Remove used OTP
+                otpRepository.delete(otpEntity);
 
                 // Fetch the user and enable the account
                 Optional<User> userOptional = userRepository.findByEmail(email);
                 if (userOptional.isPresent()) {
                     User user = userOptional.get();
                     user.setEnabled(true);
-                    userRepository.save(user); // Save the updated user
+                    userRepository.save(user);
                 }
             }
 
@@ -111,7 +111,7 @@ public class OTPService {
                 return Duration.between(LocalDateTime.now(), otpEntity.getExpirationTime()).getSeconds();
             }
         }
-        return 0; // If OTP is expired or not found
+        return 0;
     }
 
 

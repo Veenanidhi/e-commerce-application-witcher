@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>profile</title>
+    <title>profile - Witcher</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" data-th-href="@{'/css/style.css'}">
@@ -184,131 +184,104 @@
 </nav>
 
 
-<div class="container mx-auto px-4 py-8">
-    <div class="flex">
+<div class="container mx-auto px-6 py-10">
+    <div class="flex gap-6">
         <!-- Sidebar -->
-        <aside class="w-64 h-screen bg-white shadow-md ">
-            <div class="p-6">
-                <ul class="mt-2 space-y-4">
-                    <li>
-                        <a th:href="@{/user/profile}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm12 0H5v10h10V4z" clip-rule="evenodd"/>
-                            </svg>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a th:href="@{/user/profile/order-history}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 2a1 1 0 00-1 1v2H6a1 1 0 00-1 1v1h10V6a1 1 0 00-1-1h-3V3a1 1 0 00-1-1z" />
-                                <path fill-rule="evenodd" d="M4 9a1 1 0 00-1 1v6a1 1 0 001 1h12a1 1 0 001-1v-6a1 1 0 00-1-1H4z" clip-rule="evenodd" />
-                            </svg>
-                            <span>Order History</span>
-                        </a>
-                    </li>
-<!--                    <li>-->
-<!--                        <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">-->
-<!--                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">-->
-<!--                                <path d="M8 9a1 1 0 00-1 1v6a1 1 0 001 1h4a1 1 0 001-1v-6a1 1 0 00-1-1H8z" />-->
-<!--                                <path fill-rule="evenodd" d="M5 7h10V6a2 2 0 00-2-2H7a2 2 0 00-2 2v1z" clip-rule="evenodd" />-->
-<!--                            </svg>-->
-<!--                            <span>Track Order</span>-->
-<!--                        </a>-->
-<!--                    </li>-->
-                    <li>
-                        <a th:href="@{/user/cart/}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M16 5V3a1 1 0 00-1-1H5a1 1 0 00-1 1v2H2v11h16V5h-2zm-2 0H6V4h8v1z" />
-                            </svg>
-                            <span>Shopping Cart</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a th:href="@{/user/wishlist/}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M6 3a1 1 0 011-1h6a1 1 0 011 1v1H6V3zm1 3V5h6v1H7z" clip-rule="evenodd" />
-                            </svg>
-                            <span>Wishlist</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a th:href="@{/user/profile/wallet(userId=${user.id})}" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M12 7v6a2 2 0 11-4 0V7a2 2 0 114 0z" />
-                            </svg>
-                            <span>Wallet</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-black hover:text-white p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M4.293 9.293a1 1 0 011.414 0L10 13.586l4.293-4.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                            <span>Log-out</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+        <aside class="w-64 h-screen bg-white shadow-lg rounded-2xl p-6 sticky top-0">
+            <h2 class="text-2xl font-bold text-gray-800 mb-8">My Account</h2>
+            <ul class="space-y-4">
+                <li>
+                    <a th:href="@{/user/profile}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm12 0H5v10h10V4z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/user/profile/order-history}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 2a1 1 0 00-1 1v2H6a1 1 0 00-1 1v1h10V6a1 1 0 00-1-1h-3V3a1 1 0 00-1-1z" />
+                            <path fill-rule="evenodd" d="M4 9a1 1 0 00-1 1v6a1 1 0 001 1h12a1 1 0 001-1v-6a1 1 0 00-1-1H4z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Order History</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/user/cart/}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M16 5V3a1 1 0 00-1-1H5a1 1 0 00-1 1v2H2v11h16V5h-2zm-2 0H6V4h8v1z" />
+                        </svg>
+                        <span>Shopping Cart</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/user/wishlist/}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M6 3a1 1 0 011-1h6a1 1 0 011 1v1H6V3zm1 3V5h6v1H7z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Wishlist</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/user/profile/wallet}" class="flex items-center gap-3 text-gray-600 hover:bg-gray-100 p-3 rounded-xl transition">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M12 7v6a2 2 0 11-4 0V7a2 2 0 114 0z" />
+                        </svg>
+                        <span>Wallet</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center gap-3 text-red-600 hover:bg-red-50 p-3 rounded-xl transition">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 9.293a1 1 0 011.414 0L10 13.586l4.293-4.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Log-out</span>
+                    </a>
+                </li>
+            </ul>
         </aside>
 
-
         <!-- Main Content -->
-
-        <main class="flex-1 p-8 mt-0">
-            <div class="bg-white shadow rounded-lg p-6">
-                <h2 class="text-xl font-semibold mb-6">ACCOUNT SETTINGS</h2>
-                <div class="flex">
-
-                    <div class="w-2/3">
-                        <form th:action="@{/user/profile/update}" method="post" th:object="${user}">
-                            <div class="grid grid-cols-2 gap-4 mb-4">
-<!--                                <div>-->
-<!--                                    <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>-->
-<!--                                    <input type="text" id="firstName" th:field="*{addresses.firstName}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>-->
-<!--                                    <input type="text" id="lastName" th:field="*{lastName}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">-->
-<!--                                </div>-->
-                                <div>
-                                    <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                                    <input type="text" id="username" th:field="*{username}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                </div>
-                                <div>
-                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                    <input type="email" id="email" th:field="*{email}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                </div>
-                                <!-- Add other user fields as needed -->
-                            </div>
-                            <button type="submit" class="w-half bg-black text-white py-3 px-4 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50 text-lg">
-                                Save Changes
-                            </button>
-                        </form>
-                        <!-- Success message -->
-                        <div th:if="${success}" class="mt-4 text-green-500">Profile updated successfully!</div>
+        <main class="flex-1 space-y-8">
+            <!-- Profile Card -->
+            <div class="bg-white/80 backdrop-blur-md shadow-xl rounded-2xl p-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Account Settings</h2>
+                <form th:action="@{/user/profile/update}" method="post" th:object="${user}" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                            <input type="text" id="username" th:field="*{username}" class="w-full border-gray-300 rounded-xl shadow-sm focus:ring-black focus:border-black bg-gray-100 cursor-not-allowed" >
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" id="email" th:field="*{email}" class="w-full border-gray-300 rounded-xl shadow-sm focus:ring-black focus:border-black bg-gray-100 cursor-not-allowed">
+                        </div>
                     </div>
-                </div>
+                    <button type="submit" class="bg-black text-white py-3 px-6 rounded-full hover:bg-gray-900 transition text-lg bg-gray-100 cursor-not-allowed">Save Changes</button>
+                    <div th:if="${success}" class="mt-4 text-green-500">Profile updated successfully!</div>
+                </form>
             </div>
 
             <!-- Addresses Section -->
-            <div class="bg-white shadow rounded-lg p-6 mt-6">
-                <h3 class="text-lg font-semibold mb-4">ADDRESSES</h3>
-                <div th:each="address : ${addresses}" class="mb-4 p-4 border rounded">
-                    <p th:text="${address.firstName + ' ' + address.lastName}"></p>
-                    <p th:text="${address.home_address}"></p>
-                    <p th:text="${address.city + ', ' + address.state + ' ' + address.pinCode}"></p>
-                    <p th:text="${address.country}"></p>
-                    <p th:text="${address.number}"></p>
-                    <a th:href="@{/user/profile/address/edit/{id}(id=${address.address_id})}" class="text-blue-600 hover:text-blue-800">Edit</a>
+            <div class="bg-white/80 backdrop-blur-md shadow-xl rounded-2xl p-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-6">Addresses</h3>
+                <div class="space-y-6">
+                    <div th:each="address : ${addresses}" class="p-4 border border-gray-200 rounded-xl">
+                        <p th:text="${address.firstName + ' ' + address.lastName}" class="font-semibold"></p>
+                        <p th:text="${address.home_address}"></p>
+                        <p th:text="${address.city + ', ' + address.state + ' ' + address.pinCode}"></p>
+                        <p th:text="${address.country}"></p>
+                        <p th:text="${address.number}"></p>
+                        <a th:href="@{/user/profile/address/edit/{id}(id=${address.address_id})}" class="text-blue-600 hover:text-blue-800 text-sm">Edit</a>
+                    </div>
                 </div>
-                </div>
-                <a href="/user/profile/address/add" class="inline-block mt-4 bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">Add New Address</a>
-
+                <a href="/user/profile/address/add" class="inline-block mt-6 bg-green-600 text-white py-2 px-6 rounded-full hover:bg-green-700 transition">Add New Address</a>
+            </div>
         </main>
+    </div>
 </div>
-</div>
+
 
 
 
@@ -390,30 +363,5 @@
     });
 </script>
 </body>
+
 </html>
-
-<!-- Change Password Section -->
-<!--            <div class="bg-white shadow rounded-lg p-6 mt-6">-->
-<!--                <h3 class="text-lg font-semibold mb-4">CHANGE PASSWORD</h3>-->
-<!--                <form action="/user/profile/change-password" method="post">-->
-<!--                    <div class="space-y-4">-->
-<!--                        <div>-->
-<!--                            <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>-->
-<!--                            <input type="password" id="currentPassword" name="currentPassword" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">-->
-<!--                        </div>-->
-<!--                        <div>-->
-<!--                            <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>-->
-<!--                            <input type="password" id="newPassword" name="newPassword" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">-->
-<!--                        </div>-->
-<!--                        <div>-->
-<!--                            <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>-->
-<!--                            <input type="password" id="confirmPassword" name="confirmPassword" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <button type="submit" class="mt-4 w-full bg-black text-white py-3 px-4 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50 text-lg">-->
-<!--                        Change Password-->
-<!--                    </button>-->
-<!--                </form>-->
-<!--            </div>-->
-
-<!--footer-->

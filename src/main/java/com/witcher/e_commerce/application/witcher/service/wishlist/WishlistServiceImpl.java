@@ -5,7 +5,6 @@ import com.witcher.e_commerce.application.witcher.entity.Product;
 import com.witcher.e_commerce.application.witcher.entity.User;
 import com.witcher.e_commerce.application.witcher.entity.Wishlist;
 import com.witcher.e_commerce.application.witcher.service.product.ProductService;
-import com.witcher.e_commerce.application.witcher.service.wishlist.WishlistService;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

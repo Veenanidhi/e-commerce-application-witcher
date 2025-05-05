@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User,Long> {
 
     public Optional<User> findByUsername(String userName);
+
     public Optional<User> findByEmail(String email);
 
     boolean existsByUsername(String username);
@@ -20,6 +21,8 @@ public interface UserRepository extends JpaRepository<User,Long> {
     //for admin dash
     @Query("SELECT COUNT(u) FROM User u")
     long countTotalUsers();
+
+    User findByReferralCode(String referralCode);
 
 
 }
