@@ -512,6 +512,7 @@ public class CartController {
             order.setOrderDate(new Date());
             order.setTotalAmount(finalItemTotal);
             order.setUser(user);
+            order.setPaymentMethod(order.getPaymentMethod());
             orderService.saveOrder(order);
         }
 
@@ -554,6 +555,9 @@ public class CartController {
             // Update order status
             order.setPaymentStatus("Success");
             order.setOrderStatus("Processing");
+            order.setRazorpayOrderId(order.getRazorpayOrderId());
+            order.setPaymentMethod(order.getPaymentMethod());
+            order.getRazorpayPaymentId();
             orderService.saveOrder(order);
 
             return ResponseEntity.ok("Payment success processed");
@@ -576,6 +580,9 @@ public class CartController {
 
             order.setPaymentStatus("failure");
             order.setOrderStatus("Payment Pending");
+            order.setRazorpayOrderId(order.getRazorpayOrderId());
+            order.setPaymentMethod(order.getPaymentMethod());
+            order.getRazorpayPaymentId();
             orderService.saveOrder(order);
 
             return ResponseEntity.ok("Payment failure processed");

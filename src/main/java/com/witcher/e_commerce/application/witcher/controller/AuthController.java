@@ -156,7 +156,7 @@ public class AuthController {
         return "redirect:/verify-otp?email=" +theWebUser.getEmail();
     }
 
-    @GetMapping("/landingPage")
+    @GetMapping({"/", "/landingPage"})
     public String landingPage(Model model){
 
         List<Product> allProducts = productService.getAllProduct();
