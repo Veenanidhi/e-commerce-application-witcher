@@ -9,10 +9,7 @@ import com.witcher.e_commerce.application.witcher.dao.CategoryOfferRepository;
 import com.witcher.e_commerce.application.witcher.dao.CouponRepository;
 import com.witcher.e_commerce.application.witcher.dao.OrderRepository;
 import com.witcher.e_commerce.application.witcher.dao.ProductOfferRepository;
-import com.witcher.e_commerce.application.witcher.entity.CategoryOffer;
-import com.witcher.e_commerce.application.witcher.entity.Coupon;
-import com.witcher.e_commerce.application.witcher.entity.Orders;
-import com.witcher.e_commerce.application.witcher.entity.ProductOffer;
+import com.witcher.e_commerce.application.witcher.entity.*;
 import com.witcher.e_commerce.application.witcher.service.dashboard.DashboardService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -82,15 +79,24 @@ public class SalesReportController {
         int rowIndex = 4;
         for (Orders order : orders) {
             Row row = sheet.createRow(rowIndex++);
-            String productName = order.getProduct().getName();
-            double originalPrice = order.getProduct().getPrice();
-            double discount = order.getProduct().getDiscountedPrice();
-            double purchasedPrice = originalPrice - (originalPrice * discount / 100);
+            Product product = order.getProduct();
 
-            row.createCell(0).setCellValue(productName);
-            row.createCell(1).setCellValue("₹" + originalPrice);
-            row.createCell(2).setCellValue(discount + "%");
-            row.createCell(3).setCellValue("₹" + purchasedPrice);
+            if (product != null) {
+                String productName = product.getName();
+                double originalPrice = product.getPrice();
+                double discount = product.getDiscountedPrice();
+                double purchasedPrice = originalPrice - (originalPrice * discount / 100);
+
+                row.createCell(0).setCellValue(productName);
+                row.createCell(1).setCellValue("₹" + originalPrice);
+                row.createCell(2).setCellValue(discount + "%");
+                row.createCell(3).setCellValue("₹" + purchasedPrice);
+            } else {
+                row.createCell(0).setCellValue("Unknown Product");
+                row.createCell(1).setCellValue("-");
+                row.createCell(2).setCellValue("-");
+                row.createCell(3).setCellValue("-");
+            }
         }
 
         // Create offers section with error handling
@@ -161,7 +167,6 @@ public class SalesReportController {
             errorRow.createCell(0).setCellValue("Error retrieving coupons");
         }
 
-
         for (int i = 0; i < 4; i++) {
             sheet.autoSizeColumn(i);
         }
@@ -180,6 +185,7 @@ public class SalesReportController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(outputStream.toByteArray());
     }
+
 
 
 
@@ -211,22 +217,31 @@ public class SalesReportController {
             table.addCell(headerCell);
         });
 
-        List<Orders> orders = orderRepository.findAll(); // or filter today's orders if you like
+        List<Orders> orders = orderRepository.findAll();
         for (Orders order : orders) {
-            String productName = order.getProduct().getName();
-            double originalPrice = order.getProduct().getPrice();
-            double discount = order.getProduct().getDiscountedPrice(); // Assuming you have a field like this
-            double purchasedPrice = originalPrice - (originalPrice * discount / 100);
+            Product product = order.getProduct();
 
-            table.addCell(productName);
-            table.addCell("₹" + originalPrice);
-            table.addCell(discount + "%");
-            table.addCell("₹" + purchasedPrice);
+            if (product != null) {
+                String productName = product.getName();
+                double originalPrice = product.getPrice();
+                double discount = product.getDiscountedPrice();
+                double purchasedPrice = originalPrice - (originalPrice * discount / 100);
+
+                table.addCell(productName);
+                table.addCell("₹" + originalPrice);
+                table.addCell(discount + "%");
+                table.addCell("₹" + purchasedPrice);
+            } else {
+                // null-safe fallback
+                table.addCell("Unknown Product");
+                table.addCell("-");
+                table.addCell("-");
+                table.addCell("-");
+            }
         }
 
         document.add(table);
         document.add(Chunk.NEWLINE);
-
 
         try {
             List<ProductOffer> activeProductOffers = productOfferRepository.findAll().stream()
@@ -248,7 +263,6 @@ public class SalesReportController {
 
         document.add(Chunk.NEWLINE);
 
-        // Filter active and non-expired Category Offers
         try {
             List<CategoryOffer> activeCategoryOffers = categoryOfferRepository.findAll().stream()
                     .filter(offer -> offer.isActive() && LocalDate.now().isBefore(offer.getExpiryDate()))

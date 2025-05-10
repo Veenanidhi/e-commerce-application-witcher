@@ -203,6 +203,74 @@ public class CartController {
     }
 
 
+//    @GetMapping("/checkout")
+//    public String checkout(Model model, @RequestParam(value = "couponId", required = false) Long couponId) {
+//        User user = userService.getCurrentUser();
+//        Cart cart = cartService.getUserCart(user);
+//
+//        if (cart == null || cart.getCartItem() == null || cart.getCartItem().isEmpty()) {
+//            return "redirect:/productPage";
+//        }
+//
+//        double totalAmount = cart.getCartItem().stream().mapToDouble(item -> {
+//            Product product = item.getProduct();
+//            double basePrice = product.getPrice();
+//            double finalPrice = basePrice;
+//
+//            // Apply product offer - same logic as in getCart
+//            if (product.getProductOffers() != null && !product.getProductOffers().isEmpty()) {
+//                ProductOffer offer = product.getProductOffers().get(0);
+//                // Removed isActive check to match template logic
+//                double discountedPrice = basePrice - (basePrice * offer.getDiscountPercentage() / 100);
+//                finalPrice = discountedPrice;
+//            }
+//            // Apply category offer - same logic as in getCart
+//            else if (product.getCategoryOffer() != null && product.getCategoryOffer().isActive()
+//                    && product.getCategoryOffer().isActive()) {
+//                double categoryDiscountedPrice = basePrice - (basePrice * product.getCategoryOffer().getDiscountPercentage() / 100);
+//                finalPrice = categoryDiscountedPrice;
+//            }
+//
+//            // Multiply by quantity
+//            return finalPrice * item.getQuantity();
+//        }).sum();
+//
+//        // Apply coupon if provided
+//        if (couponId != null) {
+//            Optional<Coupon> optionalCoupon = couponService.getCouponById(couponId);
+//
+//            if (optionalCoupon.isPresent()) {
+//                Coupon coupon = optionalCoupon.get();
+//
+//                if (coupon.isActive() && totalAmount >= coupon.getMinimumPurchaseAmount() && coupon.getUsageCount() > 0) {
+//                    totalAmount -= coupon.getAmount();
+//                    cart.setTotalAmount(totalAmount);
+//                    cartService.saveCart(cart);
+//
+//                    coupon.setUsageCount(coupon.getUsageCount() - 1);
+//                    couponService.saveCoupon(coupon);
+//                    model.addAttribute("success", "Coupon applied successfully!");
+//                } else {
+//                    model.addAttribute("error", "Coupon is invalid or cannot be applied.");
+//                }
+//            } else {
+//                model.addAttribute("error", "Coupon not found.");
+//            }
+//        }
+//
+//        List<Address> addresses = addressService.getAllAddressesByUser(user);
+//        List<Coupon> activeCoupons = couponService.getAllCoupons();
+//
+//        model.addAttribute("coupons", activeCoupons);
+//        model.addAttribute("user", user);
+//        model.addAttribute("cartCount", cart.getCartItem().size());
+//        model.addAttribute("paymentAmount", String.format("%.2f", totalAmount));
+//        model.addAttribute("addresses", addresses);
+//        model.addAttribute("coupons", couponService.getAllCoupons());
+//
+//        return "checkout";
+//    }
+
     @GetMapping("/checkout")
     public String checkout(Model model, @RequestParam(value = "couponId", required = false) Long couponId) {
         User user = userService.getCurrentUser();
@@ -212,41 +280,38 @@ public class CartController {
             return "redirect:/productPage";
         }
 
-        double totalAmount = cart.getCartItem().stream().mapToDouble(item -> {
+        // ✅ Always calculate subtotal (based on cart items)
+        double subtotalAmount = cart.getCartItem().stream().mapToDouble(item -> {
             Product product = item.getProduct();
             double basePrice = product.getPrice();
             double finalPrice = basePrice;
 
-            // Apply product offer - same logic as in getCart
+            // Apply product offer
             if (product.getProductOffers() != null && !product.getProductOffers().isEmpty()) {
                 ProductOffer offer = product.getProductOffers().get(0);
-                // Removed isActive check to match template logic
                 double discountedPrice = basePrice - (basePrice * offer.getDiscountPercentage() / 100);
                 finalPrice = discountedPrice;
             }
-            // Apply category offer - same logic as in getCart
-            else if (product.getCategoryOffer() != null && product.getCategoryOffer().isActive()
-                    && product.getCategoryOffer().isActive()) {
+            // Apply category offer
+            else if (product.getCategoryOffer() != null && product.getCategoryOffer().isActive()) {
                 double categoryDiscountedPrice = basePrice - (basePrice * product.getCategoryOffer().getDiscountPercentage() / 100);
                 finalPrice = categoryDiscountedPrice;
             }
 
-            // Multiply by quantity
             return finalPrice * item.getQuantity();
         }).sum();
 
-        // Apply coupon if provided
+        double discountAmount = 0;
+
+        // ✅ Apply coupon only if couponId is given
         if (couponId != null) {
             Optional<Coupon> optionalCoupon = couponService.getCouponById(couponId);
 
             if (optionalCoupon.isPresent()) {
                 Coupon coupon = optionalCoupon.get();
 
-                if (coupon.isActive() && totalAmount >= coupon.getMinimumPurchaseAmount() && coupon.getUsageCount() > 0) {
-                    totalAmount -= coupon.getAmount();
-                    cart.setTotalAmount(totalAmount);
-                    cartService.saveCart(cart);
-
+                if (coupon.isActive() && subtotalAmount >= coupon.getMinimumPurchaseAmount() && coupon.getUsageCount() > 0) {
+                    discountAmount = coupon.getAmount();
                     coupon.setUsageCount(coupon.getUsageCount() - 1);
                     couponService.saveCoupon(coupon);
                     model.addAttribute("success", "Coupon applied successfully!");
@@ -258,18 +323,28 @@ public class CartController {
             }
         }
 
+        // ✅ Total amount = subtotal - discount
+        double paymentAmount = subtotalAmount - discountAmount;
+        if (paymentAmount < 0) paymentAmount = 0;
+
+        cart.setTotalAmount(paymentAmount);
+        cartService.saveCart(cart);
+
         List<Address> addresses = addressService.getAllAddressesByUser(user);
         List<Coupon> activeCoupons = couponService.getAllCoupons();
 
-        model.addAttribute("coupons", activeCoupons);
         model.addAttribute("user", user);
         model.addAttribute("cartCount", cart.getCartItem().size());
-        model.addAttribute("paymentAmount", String.format("%.2f", totalAmount));
+        model.addAttribute("subtotalAmount", String.format("%.2f", subtotalAmount));
+        model.addAttribute("discountAmount", String.format("%.2f", discountAmount));
+        model.addAttribute("paymentAmount", String.format("%.2f", paymentAmount));
         model.addAttribute("addresses", addresses);
-        model.addAttribute("coupons", couponService.getAllCoupons());
+        model.addAttribute("coupons", activeCoupons);
 
         return "checkout";
     }
+
+
 
 
     @GetMapping("/applyCoupon")
@@ -357,8 +432,12 @@ public class CartController {
         model.addAttribute("coupons", couponService.getAllCoupons());
         model.addAttribute("cartCount", cart.getCartItem().size());
 
-        return "checkout";
+        return "redirect:/user/cart/checkout";
     }
+
+
+
+
 
 
     @PostMapping("/payNow")
@@ -419,6 +498,8 @@ public class CartController {
             discountAmount = originalItemTotal - finalItemTotal;
 
 
+
+
             totalDiscount += discountAmount;
             totalAmount += finalItemTotal;
 
@@ -434,6 +515,15 @@ public class CartController {
             orderService.saveOrder(order);
         }
 
+        // apply coupon discount
+        Coupon couponDiscount = cart.getAppliedCoupon();
+
+        if (couponDiscount != null) {
+            double couponDiscountAmount = couponDiscount.getAmount();
+            totalDiscount += couponDiscountAmount;
+            totalAmount -= couponDiscountAmount;
+        }
+
         boolean codAvailable = totalAmount <= 1000;
 
         model.addAttribute("codAvailable", codAvailable);
@@ -444,6 +534,12 @@ public class CartController {
 
         return "payment";
     }
+
+
+
+
+
+
 
 
     @PostMapping("/payment/success")

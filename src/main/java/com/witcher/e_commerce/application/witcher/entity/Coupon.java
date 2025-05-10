@@ -1,6 +1,7 @@
 package com.witcher.e_commerce.application.witcher.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -14,16 +15,24 @@ public class Coupon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long couponId;
 
+    @NotBlank(message = "Coupon name is required")
     private String couponName;
 
+    @NotBlank(message = "Description is required")
     private String description;
 
+    @NotNull(message = "Discount amount is required")
+    @DecimalMin(value = "1.0", message = "Discount must be at least 1%")
+    @DecimalMax(value = "100.0", message = "Discount can't exceed 100%")
     private Double amount;
 
+    @NotNull(message = "Minimum purchase amount is required")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Minimum purchase must be greater than zero")
     private Double minimumPurchaseAmount;
 
     private boolean isActive= true;
 
+    @Min(value = 1, message = "Usage count must be greater than zero")
     private Integer usageCount;
 
     @ManyToMany(mappedBy = "coupons" ,  cascade = CascadeType.ALL)

@@ -205,8 +205,12 @@
                         <h5 class="mb-3">The total amount</h5>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                                Amount Payable
-                                <span>₹<span th:text="${paymentAmount != null ? paymentAmount : 0}">0</span></span>
+                                Subtotal
+                                <span>₹<span th:text="${subtotalAmount != null ? subtotalAmount : 0}">0</span></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Discount
+                                <span>- ₹<span th:text="${discountAmount != null ? discountAmount : 0}">0</span></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 Shipping Charge
@@ -214,10 +218,7 @@
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
                                 <div>
-                                    <strong>The total amount of</strong>
-                                    <strong>
-                                        <p class="mb-0">(including VAT)</p>
-                                    </strong>
+                                    <strong>Total (including VAT)</strong>
                                 </div>
                                 <span><strong>₹<span th:text="${paymentAmount != null ? paymentAmount : 0}">0</span></strong></span>
                             </li>
@@ -234,7 +235,6 @@
                         <h2 class="text-lg mt-5">Apply Coupon</h2>
                         <form th:action="@{/user/cart/checkout}" method="get" id="couponForm" class="mt-5 space-y-3">
                             <label for="couponSelect" class="block text-sm font-medium text-gray-700">Choose a Coupon</label>
-
                             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                                 <div class="relative w-full sm:w-64">
                                     <select name="couponId" id="couponSelect"
@@ -243,14 +243,12 @@
                                         <option th:each="coupon : ${coupons}" th:value="${coupon.couponId}" th:text="${coupon.couponName}"></option>
                                     </select>
                                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
-                                        <!-- Down arrow icon -->
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"
-                                             viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                                             stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </div>
                                 </div>
-
 
                                 <button type="submit"
                                         class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg transition-all duration-200 shadow">
@@ -259,22 +257,19 @@
                             </div>
                         </form>
 
-
                         <!-- Remove Coupon button -->
                         <a th:href="@{/user/cart/removeCoupon}" class="bg-red-500 text-white p-2 rounded inline-block mt-3">Remove Coupon</a>
                     </div>
 
+                    <br><br><br>
 
-                        <br>
-                        <br>
-                        <br>
-
-                        <form method="post" th:action="@{/user/cart/payNow}">
-                            <button type="submit" class="btn btn-primary bg-black btn-block waves-effect waves-light" id="payNowBtn" disabled>Pay Now</button>
-                        </form>
-                    </div>
+                    <form method="post" th:action="@{/user/cart/payNow}">
+                        <button type="submit" class="btn btn-primary bg-black btn-block waves-effect waves-light" id="payNowBtn" disabled>Pay Now</button>
+                    </form>
                 </div>
             </div>
+
+        </div>
 
 
 </section>

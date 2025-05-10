@@ -4,15 +4,13 @@ package com.witcher.e_commerce.application.witcher.controller.admin;
 import com.witcher.e_commerce.application.witcher.dao.CategoryRepository;
 import com.witcher.e_commerce.application.witcher.dao.OrderRepository;
 import com.witcher.e_commerce.application.witcher.dto.ProductDTO;
-import com.witcher.e_commerce.application.witcher.entity.Category;
-import com.witcher.e_commerce.application.witcher.entity.Coupon;
-import com.witcher.e_commerce.application.witcher.entity.Orders;
-import com.witcher.e_commerce.application.witcher.entity.Product;
+import com.witcher.e_commerce.application.witcher.entity.*;
 import com.witcher.e_commerce.application.witcher.service.category.CategoryService;
 import com.witcher.e_commerce.application.witcher.service.coupon.CouponService;
 import com.witcher.e_commerce.application.witcher.service.dashboard.DashboardService;
 import com.witcher.e_commerce.application.witcher.service.order.OrderService;
 import com.witcher.e_commerce.application.witcher.service.product.ProductService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,9 +28,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
@@ -108,6 +106,56 @@ public class AdminController {
             model.addAttribute("mostSoldItems", dashboardService.getMostSoldItems());
             model.addAttribute("monthlyRevenue", dashboardService.getMonthlyRevenue());
             model.addAttribute("topCategories", dashboardService.getTopSellingCategories());
+
+            // 💥 New: Sales Report Data for Table
+            List<Orders> orders = orderRepository.findAll();
+
+            List<Map<String, Object>> salesReport = orders.stream().map(order -> {
+                Map<String, Object> map = new HashMap<>();
+                Product product = order.getProduct();
+                double discount = 0.0;
+                double purchasedPrice = 0.0;
+                double originalPrice = 0.0;
+
+                if (product != null) {
+                    originalPrice = product.getPrice();
+
+                    // Apply Product Offer discount if available
+                    if (product.getProductOffers() != null && !product.getProductOffers().isEmpty()) {
+                        for (ProductOffer productOffer : product.getProductOffers()) {
+                            if (productOffer.isEnabled() && productOffer.isActive()) {
+                                discount += productOffer.getDiscountPercentage();
+                            }
+                        }
+                    }
+
+                    // Apply Category Offer discount if available
+                    if (product.getCategory() != null && product.getCategory().getCategoryOffer() != null) {
+                        CategoryOffer categoryOffer = product.getCategory().getCategoryOffer();
+                        if (categoryOffer.isEnabled() && categoryOffer.isActive()) {
+                            discount += categoryOffer.getDiscountPercentage();
+                        }
+                    }
+
+                    // Apply Coupon discount if available
+                    if (order.getCoupon() != null && order.getCoupon().isActive()) {
+                        discount += order.getCoupon().getAmount();
+                    }
+
+                    // Calculate the final discounted price
+                    purchasedPrice = originalPrice - (originalPrice * discount / 100);
+                }
+
+                map.put("productName", product != null ? product.getName() : "Unknown Product");
+                map.put("originalPrice", originalPrice);
+                map.put("discount", discount);
+                map.put("purchasedPrice", purchasedPrice);
+
+                return map;
+            }).collect(Collectors.toList());
+
+            model.addAttribute("salesReport", salesReport);
+
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Error fetching the data. Please verify the input.");
             e.printStackTrace();
@@ -316,13 +364,25 @@ public class AdminController {
             return "coupon-add";
         }
 
-        @PostMapping("/coupons/add")
-        public String addCoupon(@ModelAttribute("coupon") Coupon coupon) {
-            couponService.createCoupon(coupon);
-            return "redirect:/admin/coupons";
-        }
+//        @PostMapping("/coupons/add")
+//        public String addCoupon(@ModelAttribute("coupon") Coupon coupon) {
+//            couponService.createCoupon(coupon);
+//            return "redirect:/admin/coupons";
+//        }
 
-        @GetMapping("/coupons/edit/{id}")
+    @PostMapping("/coupons/add")
+    public String addCoupon(@Valid @ModelAttribute("coupon") Coupon coupon,
+                            BindingResult result,
+                            Model model) {
+        if (result.hasErrors()) {
+            return "coupon-add"; // Return back to form with errors
+        }
+        couponService.createCoupon(coupon);
+        return "redirect:/admin/coupons";
+    }
+
+
+    @GetMapping("/coupons/edit/{id}")
         public String showEditCouponForm(@PathVariable("id") Long id, Model model) {
             Optional<Coupon> optionalCoupon = couponService.getCouponById(id);
             if (optionalCoupon.isPresent()) {
@@ -333,13 +393,26 @@ public class AdminController {
             return "coupon-edit";
         }
 
-        @PostMapping("/coupons/edit/{id}")
-        public String updateCoupon(@PathVariable("id") Long id, @ModelAttribute("coupon") Coupon coupon) {
-            couponService.updateCoupon(id, coupon);
-            return "redirect:/admin/coupons";
-        }
+//        @PostMapping("/coupons/edit/{id}")
+//        public String updateCoupon(@PathVariable("id") Long id, @ModelAttribute("coupon") Coupon coupon) {
+//            couponService.updateCoupon(id, coupon);
+//            return "redirect:/admin/coupons";
+//        }
 
-        @PostMapping("/coupons/delete/{id}")
+    @PostMapping("/coupons/edit/{id}")
+    public String updateCoupon(@PathVariable("id") Long id,
+                               @Valid @ModelAttribute("coupon") Coupon coupon,
+                               BindingResult result,
+                               Model model) {
+        if (result.hasErrors()) {
+            return "coupon-edit"; // Return back to edit form with errors
+        }
+        couponService.updateCoupon(id, coupon);
+        return "redirect:/admin/coupons";
+    }
+
+
+    @PostMapping("/coupons/delete/{id}")
         public String deleteCoupon(@PathVariable("id") Long id) {
             couponService.deleteCoupon(id);
             return "redirect:/admin/coupons";

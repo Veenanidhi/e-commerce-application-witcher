@@ -271,8 +271,9 @@
                             </p>
 
                             <p class="text-sm text-gray-600">
-                                Price: ₹<span th:text="${order.product.price}">1000</span>
+                                Price: ₹<span th:text="${order.product.price * order.ItemCount}">1000</span>
                             </p>
+
 
                             <!-- Status -->
                             <div class="flex gap-2 mt-4 flex-wrap">
