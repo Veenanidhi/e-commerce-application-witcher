@@ -85,10 +85,6 @@
 			<version>5.5.13.2</version> <!-- Check for the latest version -->
 		</dependency>
 
-
-
-
-
 		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
